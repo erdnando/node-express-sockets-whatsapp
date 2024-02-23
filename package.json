@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "ChatApp server",
   "main": "index.js",
-  "author": "Agustin Navarro Galdon",
+  "author": "Erdnando Rodriguez Vargas",
   "license": "MIT",
   "type": "module",
   "scripts": {

@@ -3,7 +3,11 @@ import { server } from "./app.js";
 import { IP_SERVER, PORT, DB_USER, DB_PASSWORD, DB_HOST } from "./constants.js";
 import { io } from "./utils/index.js";
 
+
+mongoose.set("strictQuery", false);
+
 const mongoDbUrl = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/`;
+
 const mongoDbLocal = "mongodb://localhost/chatApp";
 
 mongoose.connect(mongoDbUrl, (error) => {
