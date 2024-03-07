@@ -5,6 +5,7 @@ async function getMe(req, res) {
   const { user_id } = req.user;
 
   try {
+    //get user data without -password
     const response = await User.findById(user_id).select(["-password"]);
 
     if (!response) {
@@ -20,12 +21,13 @@ async function getMe(req, res) {
 async function getUsers(req, res) {
   try {
     const { user_id } = req.user;
+    // get users without password and without the connected user
     const users = await User.find({ _id: { $ne: user_id } }).select([
       "-password",
     ]);
 
     if (!users) {
-      res.status(400).send({ msg: "No se han encontardo usuarios" });
+      res.status(400).send({ msg: "No se han encontrado usuarios" });
     } else {
       res.status(200).send(users);
     }
@@ -36,6 +38,9 @@ async function getUsers(req, res) {
 
 async function getUser(req, res) {
   const { id } = req.params;
+  console.log("==============");
+  console.log(req.user);
+  console.log(req.params);
 
   try {
     const response = await User.findById(id).select(["-password"]);
@@ -52,10 +57,14 @@ async function getUser(req, res) {
 
 async function updateUser(req, res) {
   const { user_id } = req.user;
+  //get complete body with file
   const userData = req.body;
+  console.log(req.body);
 
   if (req.files.avatar) {
     const imagePath = getFilePath(req.files.avatar);
+    //updatind file and set string reference instead
+    //middleware created file in to uploads folder previously
     userData.avatar = imagePath;
   }
 

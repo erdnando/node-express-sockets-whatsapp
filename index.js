@@ -34,5 +34,7 @@ mongoose.connect(mongoDbUrl, (error) => {
         socket.leave(room);
       });
     });
+
+    
   });
 });

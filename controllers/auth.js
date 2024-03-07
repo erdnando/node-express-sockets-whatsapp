@@ -2,13 +2,16 @@ import bscrypt from "bcryptjs";
 import { User } from "../models/index.js";
 import { jwt } from "../utils/index.js";
 
+
+//===========auth/register===================================================================
 function register(req, res) {
+
   const { email, password } = req.body;
 
   const user = new User({
     email: email.toLowerCase(),
   });
-
+  
   const salt = bscrypt.genSaltSync(10);
   const hashPassword = bscrypt.hashSync(password, salt);
   user.password = hashPassword;
@@ -23,12 +26,14 @@ function register(req, res) {
   });
 }
 
+//===========auth/login===================================================================
 function login(req, res) {
   const { email, password } = req.body;
 
   const emailLowerCase = email.toLowerCase();
 
   User.findOne({ email: emailLowerCase }, (error, userStorage) => {
+    
     if (error) {
       res.status(500).send({ msg: "Error del servidor" });
     } else {
