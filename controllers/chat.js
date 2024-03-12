@@ -45,6 +45,7 @@ async function getAll(req, res) {
         return res.status(400).send({ msg: "Error al obtener los chats" });
       }
 
+      //Get last message of each chat
       const arrayChats = [];
       for await (const chat of chats) {
         const response = await ChatMessage.findOne({ chat: chat._id }).sort({
