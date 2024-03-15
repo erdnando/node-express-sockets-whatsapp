@@ -29,26 +29,44 @@ function register(req, res) {
 //===========auth/login===================================================================
 function login(req, res) {
   const { email, password } = req.body;
+  console.log(req.body);
 
   const emailLowerCase = email.toLowerCase();
 
   User.findOne({ email: emailLowerCase }, (error, userStorage) => {
     
     if (error) {
+     
       res.status(500).send({ msg: "Error del servidor" });
     } else {
-      bscrypt.compare(password, userStorage.password, (bcryptError, check) => {
-        if (bcryptError) {
-          res.status(500).send({ msg: "Error del servidor" });
-        } else if (!check) {
-          res.status(400).send({ msg: "Contraseña incorrecta" });
-        } else {
-          res.status(200).send({
-            access: jwt.createAccessToken(userStorage),
-            refresh: jwt.createRefreshToken(userStorage),
+      console.log(userStorage);
+      console.log(error);
+      console.log("---------------");
+
+      if(userStorage==null){
+        //New device, ready to register it
+        res.status(200).send({ access: "",refresh:"" });
+      }else{
+
+          bscrypt.compare(password, userStorage.password, (bcryptError, check) => {
+            if (bcryptError) {
+            
+              res.status(500).send({ msg: "Error del servidor" });
+            } else if (!check) {
+              
+              res.status(400).send({ msg: "Contraseña incorrecta" });
+            } else {
+              res.status(200).send({
+                access: jwt.createAccessToken(userStorage),
+                refresh: jwt.createRefreshToken(userStorage),
+              });
+            }
           });
-        }
-      });
+
+
+    }
+
+
     }
   });
 }

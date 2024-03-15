@@ -3,8 +3,8 @@ import { JWT_SECRET_KEY } from "../constants.js";
 
 function createAccessToken(user) {
   const expToken = new Date();
-  expToken.setHours(expToken.getHours() + 24);
-
+  //expToken.setHours(expToken.getHours() + 24);
+  expToken.setMonth(expToken.getMonth()+500);
   const payload = {
     token_type: "access",
     user_id: user._id,
@@ -17,7 +17,8 @@ function createAccessToken(user) {
 
 function createRefreshToken(user) {
   const expToken = new Date();
-  expToken.setMonth(expToken.getMonth() + 1);
+  //expToken.setMonth(expToken.getMonth() + 1);
+  expToken.setMonth(expToken.getMonth()+600);
 
   const payload = {
     token_type: "refresh",
