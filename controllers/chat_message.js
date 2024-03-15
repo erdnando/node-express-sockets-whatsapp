@@ -16,9 +16,14 @@ function sendText(req, res) {
     if (error) {
       res.status(400).send({ msg: "Error al enviar el mensaje" });
     } else {
+      //getting data from db
       const data = await chat_message.populate("user");
+
+      //socket para chat message
       io.sockets.in(chat_id).emit("message", data);
+      //socket para notificaciones visuales
       io.sockets.in(`${chat_id}_notify`).emit("message_notify", data);
+
       res.status(201).send({});
     }
   });
@@ -40,8 +45,10 @@ function sendImage(req, res) {
       res.status(400).send({ msg: "Error al enviar el mensaje" });
     } else {
       const data = await chat_message.populate("user");
+
       io.sockets.in(chat_id).emit("message", data);
       io.sockets.in(`${chat_id}_notify`).emit("message_notify", data);
+
       res.status(201).send({});
     }
   });
@@ -51,28 +58,34 @@ async function getAll(req, res) {
   const { chat_id } = req.params;
 
   try {
-    const messages = await ChatMessage.find({ chat: chat_id })
-      .sort({
-        createdAt: 1,
-      })
-      .populate("user");
+      const messages = await ChatMessage.find({ chat: chat_id })
+        .sort({
+          createdAt: 1,
+        })
+        .populate("user");
 
-    const total = await ChatMessage.find({ chat: chat_id }).count();
+      const total = await ChatMessage.find({ chat: chat_id }).count();
 
-    res.status(200).send({ messages, total });
+      res.status(200).send({ messages, total });
+      
+
   } catch (error) {
-    res.status(500).send({ msg: "Error del servidor" });
+      res.status(500).send({ msg: "Error del servidor" + error});
   }
 }
 
 async function getTotalMessages(req, res) {
+  
   const { chat_id } = req.params;
 
   try {
-    const response = await ChatMessage.find({ chat: chat_id }).count();
-    res.status(200).send(JSON.stringify(response));
+
+      const response = await ChatMessage.find({ chat: chat_id }).count();
+      res.status(200).send(JSON.stringify(response));
+
   } catch (error) {
-    res.status(500).send({ msg: "Error del servidor" });
+
+      res.status(500).send({ msg: "Error del servidor" });
   }
 }
 

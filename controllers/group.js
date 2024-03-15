@@ -1,9 +1,13 @@
 import { User, Group, GroupMessage } from "../models/index.js";
 import { getFilePath } from "../utils/index.js";
 
+
+//===========================================================================================================================
 function create(req, res) {
+
   const { user_id } = req.user;
   const group = new Group(req.body);
+
   group.creator = user_id;
   group.participants = JSON.parse(req.body.participants);
   group.participants = [...group.participants, user_id];
@@ -26,7 +30,9 @@ function create(req, res) {
   });
 }
 
+//===========================================================================================================================
 function getAll(req, res) {
+
   const { user_id } = req.user;
 
   Group.find({ participants: user_id })
@@ -39,9 +45,8 @@ function getAll(req, res) {
 
       const arrayGroups = [];
       for await (const group of groups) {
-        const response = await GroupMessage.findOne({ group: group._id }).sort({
-          createdAt: -1,
-        });
+
+        const response = await GroupMessage.findOne({ group: group._id }).sort({ createdAt: -1, });
 
         arrayGroups.push({
           ...group._doc,
@@ -53,12 +58,13 @@ function getAll(req, res) {
     });
 }
 
+//===========================================================================================================================
 function getGroup(req, res) {
   const group_id = req.params.id;
 
   Group.findById(group_id, (error, groupStorage) => {
     if (error) {
-      res.status(500).send({ msg: "Error del servudor" });
+      res.status(500).send({ msg: "Error del servidor" });
     } else if (!groupStorage) {
       res.status(400).send({ msg: "No se ha encontrado el grupo" });
     } else {
@@ -67,19 +73,22 @@ function getGroup(req, res) {
   }).populate("participants");
 }
 
+//===========================================================================================================================
 async function updateGroup(req, res) {
   const { id } = req.params;
   const { name } = req.body;
 
   const group = await Group.findById(id);
 
+  //si el nombre se modifica, se asigna
   if (name) group.name = name;
-
+  //si la imagen existe se asocia el path
   if (req.files.image) {
     const imagePath = getFilePath(req.files.image);
     group.image = imagePath;
   }
 
+  //updating group
   Group.findByIdAndUpdate(id, group, (error) => {
     if (error) {
       res.status(500).send({ msg: "Error del servidor" });
@@ -89,12 +98,15 @@ async function updateGroup(req, res) {
   });
 }
 
+//===========================================================================================================================
 async function exitGroup(req, res) {
-  const { id } = req.params;
-  const { user_id } = req.user;
+
+  const { id } = req.params;//id del grupo
+  const { user_id } = req.user;//id del usuario q quiere salir de un grupo
 
   const group = await Group.findById(id);
 
+  //filtrando lista de participantes menos el usuario q se esta saliendo
   const newParticipants = group.participants.filter(
     (participant) => participant.toString() !== user_id
   );
@@ -109,7 +121,9 @@ async function exitGroup(req, res) {
   res.status(200).send({ msg: "Salida exitosa" });
 }
 
+//===========================================================================================================================
 async function addParticipants(req, res) {
+
   const { id } = req.params;
   const { users_id } = req.body;
 
@@ -119,6 +133,7 @@ async function addParticipants(req, res) {
   console.log(users_id);
 
   const arrayObjectIds = [];
+
   users.forEach((user) => {
     arrayObjectIds.push(user._id);
   });
@@ -133,7 +148,9 @@ async function addParticipants(req, res) {
   res.status(200).send({ msg: "Participantes añadidos correctamente" });
 }
 
+//===========================================================================================================================
 async function banParticipant(req, res) {
+
   const { group_id, user_id } = req.body;
 
   const group = await Group.findById(group_id);
@@ -151,6 +168,9 @@ async function banParticipant(req, res) {
 
   res.status(200).send({ msg: "Baneo con existo" });
 }
+
+//===========================================================================================================================
+
 
 export const GroupController = {
   create,
