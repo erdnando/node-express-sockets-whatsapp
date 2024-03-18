@@ -1,4 +1,4 @@
-import { Chat, ChatMessage } from "../models/index.js";
+import { Chat, ChatMessage, User, Group,GroupMessage } from "../models/index.js";
 
 async function create(req, res) {
   const { participant_id_one, participant_id_two } = req.body;
@@ -73,6 +73,25 @@ async function deleteChat(req, res) {
   });
 }
 
+async function reset(req, res) {
+  
+try{
+  await Chat.deleteMany();
+  await User.deleteMany();
+  await Group.deleteMany();
+  await GroupMessage.deleteMany();
+  await ChatMessage.deleteMany();
+
+
+  res.status(200).send({msg:"Reset aplicado..."});
+}catch(error){
+  res.status(400).send({msg:"Error al resetear la plataforma"+ error});
+}
+  
+
+  
+}
+
 async function getChat(req, res) {
   const chat_id = req.params.id;
 
@@ -92,4 +111,5 @@ export const ChatController = {
   getAll,
   deleteChat,
   getChat,
+  reset
 };

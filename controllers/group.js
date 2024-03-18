@@ -30,6 +30,30 @@ function create(req, res) {
   });
 }
 
+function createAuto(req, res) {
+
+  const { user_id } = req.user;
+  const group = new Group(req.body);
+
+  group.creator = user_id;
+  group.participants = JSON.parse(req.body.participants);
+  group.participants = [...group.participants, user_id];
+  group.image = "group/zlXppHqjYa2ZaUYHeiso6_MF.jpg";
+  
+
+  group.save((error, groupStorage) => {
+    if (error) {
+      res.status(500).send({ msg: "Error del servidor" });
+    } else {
+      if (!groupStorage) {
+        res.status(400).send({ msg: "Error al crear el grupo" });
+      } else {
+        res.status(201).send(groupStorage);
+      }
+    }
+  });
+}
+
 //===========================================================================================================================
 function getAll(req, res) {
 
@@ -174,6 +198,7 @@ async function banParticipant(req, res) {
 
 export const GroupController = {
   create,
+  createAuto,
   getAll,
   getGroup,
   updateGroup,
