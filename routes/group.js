@@ -11,6 +11,7 @@ api.post("/group", [mdAuth.asureAuth, mdUpload], GroupController.create);
 api.post("/groupauto", [mdAuth.asureAuth, mdUpload], GroupController.createAuto);
 api.get("/group", [mdAuth.asureAuth], GroupController.getAll);
 api.get("/group/:id", [mdAuth.asureAuth], GroupController.getGroup);
+api.get("/group/participants/total/:id", [mdAuth.asureAuth], GroupController.getGroupParticipants);
 api.patch("/group/exit/:id", [mdAuth.asureAuth], GroupController.exitGroup);
 api.patch(
   "/group/add_participants/:id",

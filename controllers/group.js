@@ -56,8 +56,10 @@ function createAuto(req, res) {
 
 //===========================================================================================================================
 function getAll(req, res) {
-
+console.log("getAll");
   const { user_id } = req.user;
+
+  console.log("user_id",user_id);
 
   Group.find({ participants: user_id })
     .populate("creator")
@@ -95,6 +97,25 @@ function getGroup(req, res) {
       res.status(200).send(groupStorage);
     }
   }).populate("participants");
+}
+
+//======================================here=====================================================================================
+
+async function getGroupParticipants(req, res) {
+  const group_id = req.params.id;
+
+  try {
+
+    const response = await Group.findById({ _id: group_id }).populate("participants");
+   // const myJSON = response.participants.length; 
+    //console.log(myJSON);
+    res.status(200).send(JSON.stringify(response.participants.length));
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ msg: "Error del servidor al consultar el count de participantes" });
+  }
+
 }
 
 //===========================================================================================================================
@@ -205,4 +226,5 @@ export const GroupController = {
   exitGroup,
   addParticipants,
   banParticipant,
+  getGroupParticipants
 };
