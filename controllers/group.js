@@ -8,8 +8,15 @@ function create(req, res) {
   const { user_id } = req.user;
   const group = new Group(req.body);
 
+  console.log(req.body);
   group.creator = user_id;
-  group.participants = JSON.parse(req.body.participants);
+
+  let justCreator = false;
+  let arrParticipantesAux =JSON.parse(req.body.participants);
+  if(arrParticipantesAux.length==1 && arrParticipantesAux[0]==user_id )justCreator=true;
+
+
+  group.participants = justCreator ? [] : JSON.parse(req.body.participants);
   group.participants = [...group.participants, user_id];
 
   if (req.files.image) {
@@ -36,7 +43,7 @@ function createAuto(req, res) {
   const group = new Group(req.body);
 
   group.creator = user_id;
-  group.participants = JSON.parse(req.body.participants);
+  group.participants = [];//JSON.parse(req.body.participants);
   group.participants = [...group.participants, user_id];
   group.image = "group/zlXppHqjYa2ZaUYHeiso6_MF.jpg";
   
