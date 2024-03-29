@@ -15,6 +15,7 @@ const GroupMessageSchema = mongoose.Schema(
       type: String,
       enum: ["TEXT", "IMAGE"],
     },
+    tipo_cifrado: String,
   },
   {
     timestamps: true,
