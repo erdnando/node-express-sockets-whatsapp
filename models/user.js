@@ -9,6 +9,7 @@ const UserSchema = mongoose.Schema({
   lastname: String,
   password: String,
   avatar: String,
+  nip: String,
 });
 
 export const User = mongoose.model("User", UserSchema);

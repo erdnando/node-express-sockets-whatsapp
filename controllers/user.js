@@ -1,6 +1,8 @@
 import { Group, User } from "../models/index.js";
 import { getFilePath } from "../utils/index.js";
 
+
+//============================================================================================================
 async function getMe(req, res) {
   const { user_id } = req.user;
 
@@ -18,6 +20,7 @@ async function getMe(req, res) {
   }
 }
 
+//============================================================================================================
 async function getUsers(req, res) {
   try {
     const { user_id } = req.user;
@@ -36,6 +39,7 @@ async function getUsers(req, res) {
   }
 }
 
+//============================================================================================================
 async function getUser(req, res) {
   const { id } = req.params;
   console.log("==============");
@@ -55,6 +59,7 @@ async function getUser(req, res) {
   }
 }
 
+//============================================================================================================
 async function updateUser(req, res) {
   const { user_id } = req.user;
   //get complete body with file
@@ -77,6 +82,7 @@ async function updateUser(req, res) {
   });
 }
 
+//============================================================================================================
 async function getUsersExeptParticipantsGroup(req, res) {
   const { group_id } = req.params;
 
@@ -94,6 +100,8 @@ async function getUsersExeptParticipantsGroup(req, res) {
     res.status(200).send(response);
   }
 }
+
+//============================================================================================================
 
 export const UserController = {
   getMe,
