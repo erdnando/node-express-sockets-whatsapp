@@ -71,6 +71,7 @@ function login(req, res) {
   });
 }
 
+//===========================================================================================================
 function refreshAccessToken(req, res) {
   const { refreshToken } = req.body;
 
@@ -95,9 +96,9 @@ function refreshAccessToken(req, res) {
     }
   });
 }
-
+//===========================================================================================================
 export const AuthController = {
   register,
   login,
-  refreshAccessToken,
+  refreshAccessToken
 };
