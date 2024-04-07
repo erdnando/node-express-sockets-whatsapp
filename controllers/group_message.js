@@ -36,6 +36,53 @@ function sendText(req, res) {
   });
 }
 //=================================================================================================================
+async function sendTextEditado(req, res) {
+
+  const { group_id, message,tipo_cifrado,idMessage } = req.body;
+  
+  const { user_id } = req.user;
+
+  const messageRef = await GroupMessage.findById({ _id: idMessage }).populate("user");
+  console.log(messageRef);
+  messageRef.message=message;
+  messageRef.tipo_cifrado=tipo_cifrado;
+  console.log("==============================");
+  console.log(messageRef);
+
+  GroupMessage.findByIdAndUpdate({ _id: idMessage }, messageRef, (error) => {
+    if (error) {
+      res.status(400).send({ msg: "Error al actualizar el mensaje" });
+    } else {
+      io.sockets.in(group_id).emit("reloadmsgs", true);
+      res.status(201).send(messageRef);
+    }
+  });
+
+}
+
+//=================================================================================================================
+async function deleteMessage(req, res) {
+
+  const { group_id,idMessage } = req.body;
+  
+  const { user_id } = req.user;
+
+  //const messageRef = await GroupMessage.findById({ _id: idMessage });
+  //console.log(messageRef);
+  
+  GroupMessage.findByIdAndDelete( {_id: idMessage}, (error) => {
+    if (error) {
+      console.log(error);
+      res.status(400).send({ msg: "Error al eliminar el chat" });
+    } else {
+      io.sockets.in(group_id).emit("reloadmsgs", true);
+      res.status(201).send({ msg: "Mensaje eliminado" });
+    }
+  });
+
+}
+
+//=================================================================================================================
 function sendImage(req, res) {
 
   const { group_id } = req.body;
@@ -119,6 +166,8 @@ async function getLastMessage(req, res) {
 
 export const GroupMessageController = {
   sendText,
+  sendTextEditado,
+  deleteMessage,
   sendImage,
   getAll,
   getTotalMessages,

@@ -8,6 +8,8 @@ const mdUpload = multiparty({ uploadDir: "./uploads/images" });
 const api = express.Router();
 
 api.post("/group/message", [mdAuth.asureAuth], GroupMessageController.sendText);
+api.put("/group/message/edit", [mdAuth.asureAuth], GroupMessageController.sendTextEditado);
+api.delete("/group/message/delete", [mdAuth.asureAuth], GroupMessageController.deleteMessage);
 api.post("/group/message/image",  [mdAuth.asureAuth, mdUpload],  GroupMessageController.sendImage);
 api.get( "/group/message/:group_id",  [mdAuth.asureAuth],  GroupMessageController.getAll);
 api.get( "/group/message/total/:group_id", [mdAuth.asureAuth],  GroupMessageController.getTotalMessages);
