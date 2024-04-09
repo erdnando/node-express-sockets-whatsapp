@@ -88,6 +88,7 @@ function sendImage(req, res) {
   const { group_id } = req.body;
   const { user_id } = req.user;
 
+console.log("receiving image in server...")
   const group_message = new GroupMessage({
     group: group_id,
     user: user_id,
@@ -95,6 +96,8 @@ function sendImage(req, res) {
     type: "IMAGE",
   });
 
+  console.log(group_message);
+  
   group_message.save(async (error) => {
 
     if (error) {
