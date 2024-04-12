@@ -116,6 +116,43 @@ console.log("receiving image in server...")
     }
   });
 }
+
+//=================================================================================================================
+function sendFile(req, res) {
+
+  const { group_id } = req.body;
+  const { user_id } = req.user;
+
+console.log("receiving file in server...")
+  const group_message = new GroupMessage({
+    group: group_id,
+    user: user_id,
+    message: getFilePath(req.files.file),
+    type: "FILE",
+  });
+
+  console.log(group_message);
+  
+  group_message.save(async (error) => {
+
+    if (error) {
+
+      res.status(500).send({ msg: "Error del servidor" });
+
+    } else {
+
+      const data = await group_message.populate("user");
+
+      io.sockets.in(group_id).emit("message", data);
+      io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
+
+      res.status(201).send({});
+      //res.status(201).send(data);
+      
+
+    }
+  });
+}
 //=================================================================================================================
 async function getAll(req, res) {
 
@@ -170,6 +207,7 @@ async function getLastMessage(req, res) {
 export const GroupMessageController = {
   sendText,
   sendTextEditado,
+  sendFile,
   deleteMessage,
   sendImage,
   getAll,

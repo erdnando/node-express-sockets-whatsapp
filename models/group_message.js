@@ -13,7 +13,7 @@ const GroupMessageSchema = mongoose.Schema(
     message: String,
     type: {
       type: String,
-      enum: ["TEXT", "IMAGE"],
+      enum: ["TEXT", "IMAGE","FILE"],
     },
     tipo_cifrado: String,
   },
