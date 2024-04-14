@@ -16,6 +16,13 @@ const GroupMessageSchema = mongoose.Schema(
       enum: ["TEXT", "IMAGE","FILE"],
     },
     tipo_cifrado: String,
+    email_replied:String,
+    message_replied:String,
+    tipo_cifrado_replied:String
+    /*replied_message:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "GroupMessage",
+    }*/
   },
   {
     timestamps: true,

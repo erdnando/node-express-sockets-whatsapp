@@ -37,15 +37,16 @@ function create(req, res) {
   });
 }
 
+//=======================================================================================
 function createAuto(req, res) {
 
   const { user_id } = req.user;
   const group = new Group(req.body);
 
   group.creator = user_id;
-  group.participants = [];//JSON.parse(req.body.participants);
+  group.participants = [];//JSON.parse(req.body.participants); 
   group.participants = [...group.participants, user_id];
-  group.image = "group/zlXppHqjYa2ZaUYHeiso6_MF.jpg";
+  group.image = "group/group1.png";
   
 
   group.save((error, groupStorage) => {

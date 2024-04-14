@@ -4,7 +4,7 @@ import { io, getFilePath } from "../utils/index.js";
 //=================================================================================================================
 function sendText(req, res) {
 
-  const { group_id, message,tipo_cifrado } = req.body;
+  const { group_id, message,tipo_cifrado,replied_message } = req.body;
   
   const { user_id } = req.user;
 
@@ -13,7 +13,11 @@ function sendText(req, res) {
     user: user_id,
     message,
     type: "TEXT",
-    tipo_cifrado:tipo_cifrado
+    tipo_cifrado:tipo_cifrado,
+
+    email_replied:replied_message?.user?.email,
+    message_replied:replied_message?.message,
+    tipo_cifrado_replied:replied_message?.tipo_cifrado
   });
 
   group_message.save(async (error) => {
@@ -24,11 +28,14 @@ function sendText(req, res) {
 
     } else {
 
-      const data = await group_message.populate("user");
+      let  data = await group_message.populate(["user"]);
 
+     
+      console.log("==================GroupMessage===================");
       console.log(data);
       io.sockets.in(group_id).emit("message", data);
       io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
+      
 
       res.status(201).send({});
 
