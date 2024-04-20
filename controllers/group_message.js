@@ -14,7 +14,6 @@ function sendText(req, res) {
     message,
     type: "TEXT",
     tipo_cifrado:tipo_cifrado,
-
     email_replied:replied_message?.user?.email,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
