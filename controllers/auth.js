@@ -33,21 +33,26 @@ function login(req, res) {
 
   const emailLowerCase = email.toLowerCase();
 
+  //busca el usuario de manera inicial
   User.findOne({ email: emailLowerCase }, (error, userStorage) => {
     
+    console.log("buscando por email::::")
+    console.log(email)
     if (error) {
      
       res.status(500).send({ msg: "Error del servidor" });
-    } else {
+    } else 
+    {
+      console.log("userStorage:::::::");
       console.log(userStorage);
-      console.log(error);
+      //console.log(error);
       console.log("---------------");
 
+      //si no lo encuentra, regresa empty
       if(userStorage==null){
-        //New device, ready to register it
         res.status(200).send({ access: "",refresh:"" });
       }else{
-
+          //si, si lo encuentra, le genera su token
           bscrypt.compare(password, userStorage.password, (bcryptError, check) => {
             if (bcryptError) {
             
@@ -62,10 +67,7 @@ function login(req, res) {
               });
             }
           });
-
-
     }
-
 
     }
   });

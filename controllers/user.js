@@ -7,8 +7,14 @@ async function getMe(req, res) {
   const { user_id } = req.user;
 
   try {
+    console.log("buscando por:::::::::user_id");
+    console.log(user_id);
     //get user data without -password
     const response = await User.findById(user_id).select(["-password"]);
+
+    console.log("response:::::::");
+    console.log(response);
+
 
     if (!response) {
       res.status(400).send({ msg: "No se ha encontrado el usuario" });
