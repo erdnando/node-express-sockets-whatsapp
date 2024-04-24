@@ -47,6 +47,9 @@ function createAuto(req, res) {
   group.participants = [];//JSON.parse(req.body.participants); 
   group.participants = [...group.participants, user_id];
   group.image = "group/group1.png";
+
+  console.log("group creado automatico:::::::");
+  console.log(group);
   
 
   group.save((error, groupStorage) => {

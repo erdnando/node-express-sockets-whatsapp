@@ -61,8 +61,12 @@ function login(req, res) {
               
               res.status(400).send({ msg: "Contraseña incorrecta" });
             } else {
+
+              let token = jwt.createAccessToken(userStorage);
+              console.log("token:::::::::");
+              console.log(token);
               res.status(200).send({
-                access: jwt.createAccessToken(userStorage),
+                access: jwt.createAccessToken(token),
                 refresh: jwt.createRefreshToken(userStorage),
               });
             }
@@ -71,6 +75,26 @@ function login(req, res) {
 
     }
   });
+}
+
+//===========================================================================================================
+function getToken(req, res) {
+  //const { userStorage } = req.body;
+  console.log(req.body);
+
+  //const emailLowerCase = email.toLowerCase();
+
+    console.log("userStorage:::::::");
+      console.log(req.body);
+      //console.log(error);
+      console.log("---------------");
+
+      //si no lo encuentra, regresa empty
+      res.status(200).send({
+        access: jwt.createAccessToken(req.body),
+        refresh: jwt.createRefreshToken(req.body),
+      });
+  
 }
 
 //===========================================================================================================
@@ -102,5 +126,6 @@ function refreshAccessToken(req, res) {
 export const AuthController = {
   register,
   login,
-  refreshAccessToken
+  refreshAccessToken,
+  getToken
 };
