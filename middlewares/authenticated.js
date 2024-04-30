@@ -9,6 +9,8 @@ function asureAuth(req, res, next) {
 
   const token = req.headers.authorization.replace("Bearer ", "");
 
+  console.log("token ingrsado")
+  console.log(token)
   try {
     const hasExpired = jwt.hasExpiredToken(token);
 
@@ -18,6 +20,9 @@ function asureAuth(req, res, next) {
 
     const payload = jwt.decoded(token);
     req.user = payload;
+
+    console.log("token payload")
+  console.log(payload)
 
     next();
   } catch (error) {

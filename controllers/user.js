@@ -6,6 +6,10 @@ import { getFilePath } from "../utils/index.js";
 async function getMe(req, res) {
   const { user_id } = req.user;
 
+  console.log("req.user")
+  console.log(req.user)
+  
+
   try {
     console.log("buscando por:::::::::user_id");
     console.log(user_id);
@@ -16,7 +20,7 @@ async function getMe(req, res) {
     console.log(response);
 
 
-    if (!response) {
+    if (!response ) {
       res.status(400).send({ msg: "No se ha encontrado el usuario" });
     } else {
       res.status(200).send(response);
@@ -34,6 +38,22 @@ async function getUsers(req, res) {
     const users = await User.find({ _id: { $ne: user_id } }).select([
       "-password",
     ]);
+
+    if (!users) {
+      res.status(400).send({ msg: "No se han encontrado usuarios" });
+    } else {
+      res.status(200).send(users);
+    }
+  } catch (error) {
+    res.status(500).send({ msg: "Error del servidor" });
+  }
+}
+
+async function getAllUsers(req, res) {
+  try {
+    const { user_id } = req.user;
+    // get users without password and without the connected user
+    const users = await User.find();
 
     if (!users) {
       res.status(400).send({ msg: "No se han encontrado usuarios" });
@@ -116,4 +136,5 @@ export const UserController = {
   getUser,
   updateUser,
   getUsersExeptParticipantsGroup,
+  getAllUsers
 };

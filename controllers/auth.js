@@ -16,6 +16,9 @@ function register(req, res) {
   const hashPassword = bscrypt.hashSync(password, salt);
   user.password = hashPassword;
 
+  console.log("hash generado")
+  console.log(hashPassword)
+
   user.save((error, userStorage) => {
     if (error) {
       console.log(error);
@@ -66,7 +69,7 @@ function login(req, res) {
               console.log("token:::::::::");
               console.log(token);
               res.status(200).send({
-                access: jwt.createAccessToken(token),
+                access: token,  //token
                 refresh: jwt.createRefreshToken(userStorage),
               });
             }
