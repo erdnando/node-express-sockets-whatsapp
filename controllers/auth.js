@@ -66,7 +66,7 @@ function login(req, res) {
               console.log("token:::::::::");
               console.log(token);
               res.status(200).send({
-                access: jwt.createAccessToken(token),
+                access: token,
                 refresh: jwt.createRefreshToken(userStorage),
               });
             }

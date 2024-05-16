@@ -21,6 +21,8 @@ function asureAuth(req, res, next) {
 
     next();
   } catch (error) {
+    console.log("Token invalido")
+    console.log(error)
     return res.status(400).send({ msg: "Token invalido" });
   }
 }

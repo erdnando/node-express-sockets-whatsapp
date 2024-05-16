@@ -7,8 +7,10 @@ async function getMe(req, res) {
   const { user_id } = req.user;
 
   try {
+    console.log(req.user)
     console.log("buscando por:::::::::user_id");
     console.log(user_id);
+
     //get user data without -password
     const response = await User.findById(user_id).select(["-password"]);
 
@@ -17,7 +19,7 @@ async function getMe(req, res) {
 
 
     if (!response) {
-      res.status(400).send({ msg: "No se ha encontrado el usuario" });
+      res.status(400).send({ msg: "No se ha encontrado el usuario (getme)" });
     } else {
       res.status(200).send(response);
     }
@@ -49,6 +51,7 @@ async function getUsers(req, res) {
 async function getUser(req, res) {
   const { id } = req.params;
   console.log("==============");
+  console.log(id);
   console.log(req.user);
   console.log(req.params);
 
@@ -56,7 +59,7 @@ async function getUser(req, res) {
     const response = await User.findById(id).select(["-password"]);
 
     if (!response) {
-      res.status(400).send({ msg: "No se ha encontrado el usuario" });
+      res.status(400).send({ msg: "No se ha encontrado el usuario (getuser)" });
     } else {
       res.status(200).send(response);
     }
@@ -96,6 +99,10 @@ async function getUsersExeptParticipantsGroup(req, res) {
   const group = await Group.findById(group_id);
   const participantsStrings = group.participants.toString();
   const participants = participantsStrings.split(",");
+  console.log("participants")
+  console.log(participants)
+  console.log("group_id")
+  console.log(group_id)
 
   const response = await User.find({ _id: { $nin: participants } }).select([
     "-password",
