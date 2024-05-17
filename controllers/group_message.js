@@ -43,6 +43,90 @@ function sendText(req, res) {
     }
   });
 }
+
+function sendTextForwardedImage(req, res) {
+
+  const { group_id, message,tipo_cifrado,replied_message,forwarded } = req.body;
+  
+  const { user_id } = req.user;
+
+  const group_message = new GroupMessage({
+    group: group_id,
+    user: user_id,
+    message,
+    type: "IMAGE",
+    tipo_cifrado:tipo_cifrado,
+    email_replied:replied_message?.user?.email,
+    message_replied:replied_message?.message,
+    tipo_cifrado_replied:replied_message?.tipo_cifrado,
+    forwarded:true
+  });
+
+  group_message.save(async (error) => {
+
+    if (error) {
+
+      res.status(500).send({ msg: "Error del servidor" });
+
+    } else {
+
+      let  data = await group_message.populate(["user"]);
+
+     
+      console.log("==================GroupMessage===================");
+      console.log(data);
+      console.log("Enviando al grupo::::::"+group_id)
+      io.sockets.in(group_id).emit("message", data);
+      io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
+      
+
+      res.status(201).send({});
+
+    }
+  });
+}
+
+function sendTextForwardedFile(req, res) {
+
+  const { group_id, message,tipo_cifrado,replied_message,forwarded } = req.body;
+  
+  const { user_id } = req.user;
+
+  const group_message = new GroupMessage({
+    group: group_id,
+    user: user_id,
+    message,
+    type: "FILE",
+    tipo_cifrado:tipo_cifrado,
+    email_replied:replied_message?.user?.email,
+    message_replied:replied_message?.message,
+    tipo_cifrado_replied:replied_message?.tipo_cifrado,
+    forwarded:true
+  });
+
+  group_message.save(async (error) => {
+
+    if (error) {
+
+      res.status(500).send({ msg: "Error del servidor" });
+
+    } else {
+
+      let  data = await group_message.populate(["user"]);
+
+     
+      console.log("==================GroupMessage===================");
+      console.log(data);
+      console.log("Enviando al grupo::::::"+group_id)
+      io.sockets.in(group_id).emit("message", data);
+      io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
+      
+
+      res.status(201).send({});
+
+    }
+  });
+}
 //=================================================================================================================
 async function sendTextEditado(req, res) {
 
@@ -214,6 +298,8 @@ async function getLastMessage(req, res) {
 
 export const GroupMessageController = {
   sendText,
+  sendTextForwardedImage,
+  sendTextForwardedFile,
   sendTextEditado,
   sendFile,
   deleteMessage,
