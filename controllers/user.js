@@ -22,13 +22,9 @@ async function getMe(req, res) {
     console.log(response);
 
 
-<<<<<<< HEAD
+
     if (!response ) {
       res.status(400).send({ msg: "No se ha encontrado el usuario" });
-=======
-    if (!response) {
-      res.status(400).send({ msg: "No se ha encontrado el usuario (getme)" });
->>>>>>> main
     } else {
       res.status(200).send(response);
     }
