@@ -13,6 +13,7 @@ const GroupSchema = mongoose.Schema({
       ref: "User",
     },
   ],
+  tipo:String
 });
 
 export const Group = mongoose.model("Group", GroupSchema);

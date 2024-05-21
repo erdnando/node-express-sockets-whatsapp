@@ -14,9 +14,9 @@ mongoose.connect(mongoDbUrl, (error) => {
   if (error) throw error;
 
   server.listen(PORT, () => {
-    console.log("######################");
-    console.log("###### API REST ######");
-    console.log("######################");
+    console.log("##################################");
+    console.log("###### API REST SECURE CHAT ######");
+    console.log("##################################");
     console.log(`http://${IP_SERVER}:${PORT}/api`);
 
     io.sockets.on("connection", (socket) => {
