@@ -12,6 +12,7 @@ api.post("/group/message", [mdAuth.asureAuth], GroupMessageController.sendText);
 api.post("/group/message/forward_image", [mdAuth.asureAuth], GroupMessageController.sendTextForwardedImage);
 api.post("/group/message/forward_file", [mdAuth.asureAuth], GroupMessageController.sendTextForwardedFile);
 api.put("/group/message/edit", [mdAuth.asureAuth], GroupMessageController.sendTextEditado);
+api.put("/group/message/crypt", [mdAuth.asureAuth], GroupMessageController.sendTextUpdateCrypt);
 api.delete("/group/message/delete", [mdAuth.asureAuth], GroupMessageController.deleteMessage);
 api.post("/group/message/image",  [mdAuth.asureAuth, mdUpload],  GroupMessageController.sendImage);
 api.post("/group/message/file",  [mdAuth.asureAuth, mdUploadFile],  GroupMessageController.sendFile);

@@ -128,6 +128,31 @@ function sendTextForwardedFile(req, res) {
   });
 }
 //=================================================================================================================
+
+async function sendTextUpdateCrypt(req, res) {
+
+  const { group_id, message,tipo_cifrado,idMessage } = req.body;
+  
+  const { user_id } = req.user;
+
+  const messageRef = await GroupMessage.findById({ _id: idMessage }).populate("user");
+  console.log(messageRef);
+  messageRef.message=message;
+  messageRef.tipo_cifrado=tipo_cifrado;
+  console.log("==============================");
+  console.log(messageRef);
+
+  GroupMessage.findByIdAndUpdate({ _id: idMessage }, messageRef, (error) => {
+    if (error) {
+      res.status(400).send({ msg: "Error al actualizar el mensaje" });
+    } else {
+      //io.sockets.in(group_id).emit("reloadmsgs", true);
+      res.status(201).send(messageRef);
+    }
+  });
+
+}
+
 async function sendTextEditado(req, res) {
 
   const { group_id, message,tipo_cifrado,idMessage } = req.body;
@@ -301,6 +326,7 @@ export const GroupMessageController = {
   sendTextForwardedImage,
   sendTextForwardedFile,
   sendTextEditado,
+  sendTextUpdateCrypt,
   sendFile,
   deleteMessage,
   sendImage,
