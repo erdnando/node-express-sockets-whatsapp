@@ -1,4 +1,4 @@
-import { GroupMessage } from "../models/index.js";
+import { GroupMessage, Group } from "../models/index.js";
 import { io, getFilePath } from "../utils/index.js";
 
 //=================================================================================================================
@@ -20,29 +20,44 @@ function sendText(req, res) {
     forwarded:forwarded
   });
 
-  group_message.save(async (error) => {
+      group_message.save(async (error) => {
 
-    if (error) {
+        if (error) {
 
-      res.status(500).send({ msg: "Error del servidor" });
+          res.status(500).send({ msg: "Error del servidor" });
 
-    } else {
+        } else {
 
-      let  data = await group_message.populate(["user"]);
+          let  data = await group_message.populate(["user"]);
 
-     
-      console.log("==================GroupMessage===================");
-      console.log(data);
-      console.log("Enviando al grupo::::::")
-      console.log(group_id)
-      io.sockets.in(group_id).emit("message", data);
-      io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
-      
+        
+           
 
-      res.status(201).send({});
+          console.log("==================GroupMessage===================");
+          console.log(data);
+          console.log("Enviando al grupo::::::")
+          console.log(group_id)
+          io.sockets.in(group_id).emit("message", data);
+          io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
 
-    }
-  });
+
+         //get all members of the group
+         const response = await Group.findById({ _id: group_id }).populate("participants");
+         response.participants.forEach((user_id) => {
+           console.log("user_id del grupo")
+           console.log(user_id._id.toString())
+       
+           io.sockets.in(user_id._id.toString()).emit("pushing_notification", data);
+         });
+
+          
+          
+
+          res.status(201).send({});
+
+        }
+      });
+
 }
 
 function sendTextForwardedImage(req, res) {
