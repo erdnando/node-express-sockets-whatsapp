@@ -46,8 +46,9 @@ function sendText(req, res) {
          response.participants.forEach((userId) => {
            console.log("userId del grupo")
            console.log(userId._id.toString())
+           console.log(user_id)
        
-          // if(userId._id !== user_id)
+           if(userId._id.toString() !== user_id)
            io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
          });
 
