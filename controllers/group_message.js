@@ -33,7 +33,8 @@ function sendText(req, res) {
      
       console.log("==================GroupMessage===================");
       console.log(data);
-      console.log("Enviando al grupo::::::"+group_id)
+      console.log("Enviando al grupo::::::")
+      console.log(group_id)
       io.sockets.in(group_id).emit("message", data);
       io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
       
