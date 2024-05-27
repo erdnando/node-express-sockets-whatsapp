@@ -1,5 +1,5 @@
 import { User, Group, GroupMessage } from "../models/index.js";
-import { getFilePath } from "../utils/index.js";
+import { io, getFilePath } from "../utils/index.js";
 
 
 //===========================================================================================================================
@@ -200,6 +200,16 @@ async function addParticipants(req, res) {
   };
 
   await Group.findByIdAndUpdate(id, newData);
+
+
+  //new
+  arrayObjectIds.forEach((user_id) => {
+    console.log("user_id invitado")
+    console.log(user_id)
+    console.log("datos dle grupo")
+    console.log(newData)
+   io.sockets.in(`${user_id}_ref`).emit("message_invite", newData);
+  });
 
   res.status(200).send({ msg: "Participantes añadidos correctamente" });
 }
