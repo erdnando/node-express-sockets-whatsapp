@@ -97,6 +97,22 @@ function sendTextForwardedImage(req, res) {
       io.sockets.in(group_id).emit("message", data);
       io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
       
+      
+
+
+
+       //get all members of the group
+       const response = await Group.findById({ _id: group_id }).populate("participants");
+       response.participants.forEach((userId) => {
+         console.log("userId del grupo")
+         console.log(userId._id.toString())
+         console.log(user_id)
+     
+         if(userId._id.toString() !== user_id)
+         io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+       });
+
+
 
       res.status(201).send({});
 
@@ -139,6 +155,21 @@ function sendTextForwardedFile(req, res) {
       io.sockets.in(group_id).emit("message", data);
       io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
       
+
+
+
+       //get all members of the group
+       const response = await Group.findById({ _id: group_id }).populate("participants");
+       response.participants.forEach((userId) => {
+         console.log("userId del grupo")
+         console.log(userId._id.toString())
+         console.log(user_id)
+     
+         if(userId._id.toString() !== user_id)
+         io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+       });
+
+
 
       res.status(201).send({});
 
@@ -246,6 +277,21 @@ console.log("receiving image in server...")
       io.sockets.in(group_id).emit("message", data);
       io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
 
+
+
+       //get all members of the group
+       const response = await Group.findById({ _id: group_id }).populate("participants");
+       response.participants.forEach((userId) => {
+         console.log("userId del grupo")
+         console.log(userId._id.toString())
+         console.log(user_id)
+     
+         if(userId._id.toString() !== user_id)
+         io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+       });
+
+
+
       res.status(201).send({});
 
     }
@@ -280,6 +326,21 @@ console.log("receiving file in server...")
 
       io.sockets.in(group_id).emit("message", data);
       io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
+
+
+
+
+       //get all members of the group
+       const response = await Group.findById({ _id: group_id }).populate("participants");
+       response.participants.forEach((userId) => {
+         console.log("userId del grupo")
+         console.log(userId._id.toString())
+         console.log(user_id)
+     
+         if(userId._id.toString() !== user_id)
+         io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+       });
+       
 
       res.status(201).send({});
       //res.status(201).send(data);
