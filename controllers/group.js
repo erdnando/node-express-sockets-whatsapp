@@ -209,7 +209,8 @@ async function addParticipants(req, res) {
     //console.log(JSON.stringify(user_id))
     console.log("datos dle grupo")
     console.log(newData)
-   io.sockets.in(`${user_id.toString()}_ref`).emit("message_invite", newData);
+  // io.sockets.in(`${user_id.toString()}_ref`).emit("message_invite", newData);
+   io.sockets.in(user_id.toString()).emit("message_invite", newData);
   });
 
   res.status(200).send({ msg: "Participantes añadidos correctamente" });
