@@ -43,11 +43,12 @@ function sendText(req, res) {
 
          //get all members of the group
          const response = await Group.findById({ _id: group_id }).populate("participants");
-         response.participants.forEach((user_id) => {
-           console.log("user_id del grupo")
-           console.log(user_id._id.toString())
+         response.participants.forEach((userId) => {
+           console.log("userId del grupo")
+           console.log(userId._id.toString())
        
-           io.sockets.in(user_id._id.toString()).emit("pushing_notification", data);
+           if(userId._id !== user_id)
+           io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
          });
 
           
