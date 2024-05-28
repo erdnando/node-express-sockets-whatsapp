@@ -331,15 +331,20 @@ console.log("receiving file in server...")
 
 
        //get all members of the group
-       const response = await Group.findById({ _id: group_id }).populate("participants");
-       response.participants.forEach((userId) => {
-         console.log("userId del grupo")
-         console.log(userId._id.toString())
-         console.log(user_id)
-     
-         if(userId._id.toString() !== user_id)
-         io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
-       });
+       try{
+        console.log("Preparando  envio socket")
+          const response = await Group.findById({ _id: group_id }).populate("participants");
+          response.participants.forEach((userId) => {
+            console.log("userId del grupo")
+            console.log(userId._id.toString())
+            console.log(user_id)
+        
+            if(userId._id.toString() !== user_id)
+            io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+          });
+      }catch(err){
+        console.log("Error al enviar socket")
+      }
        
 
       res.status(201).send({});
