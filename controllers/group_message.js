@@ -262,8 +262,8 @@ console.log("receiving image in server...")
     type: "IMAGE",
   });
 
-  console.log(group_message);
-  
+  console.log(group_message); 
+
   group_message.save(async (error) => {
 
     if (error) {
@@ -312,8 +312,8 @@ console.log("receiving file in server...")
     type: "FILE",
   });
 
-  console.log(group_message);
-  
+  console.log(group_message);  
+
   group_message.save(async (error) => {
 
     if (error) {
@@ -331,8 +331,8 @@ console.log("receiving file in server...")
 
 
        //get all members of the group
-       try{
-        console.log("Preparando  envio socket")
+
+
           const response = await Group.findById({ _id: group_id }).populate("participants");
           response.participants.forEach((userId) => {
             console.log("userId del grupo")
@@ -342,11 +342,11 @@ console.log("receiving file in server...")
             if(userId._id.toString() !== user_id)
             io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
           });
-      }catch(err){
-        console.log("Error al enviar socket")
-      }
-       
 
+
+
+
+     
       res.status(201).send({});
       //res.status(201).send(data);
       
