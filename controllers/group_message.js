@@ -14,11 +14,16 @@ function sendText(req, res) {
     message,
     type: "TEXT",
     tipo_cifrado:tipo_cifrado,
-    email_replied:replied_message?.user?.email,
+    email_replied:replied_message?.user?.firstname == "" ? replied_message?.user?.email: replied_message?.user?.firstname,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:forwarded
   });
+
+  console.log("---------------------------------")
+  console.log(replied_message?.user?.firstname)
+  console.log(replied_message?.user?.email)
+  console.log("---------------------------------")
 
       group_message.save(async (error) => {
 
@@ -43,13 +48,22 @@ function sendText(req, res) {
 
          //get all members of the group
          const response = await Group.findById({ _id: group_id }).populate("participants");
+
          response.participants.forEach((userId) => {
-           console.log("userId del grupo")
-           console.log(userId._id.toString())
-           console.log(user_id)
-       
-           if(userId._id.toString() !== user_id)
-           io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+
+            console.log("userId del grupo")
+            console.log(userId._id.toString())
+            console.log(user_id)
+        
+            console.log(userId._id.toString() == user_id)
+            console.log(userId._id.toString() === user_id)
+
+            if(userId._id.toString() !== user_id){
+              console.log("emitiendo a:", userId._id.toString())
+              io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+            }
+           
+
          });
 
           
@@ -74,7 +88,9 @@ function sendTextForwardedImage(req, res) {
     message,
     type: "IMAGE",
     tipo_cifrado:tipo_cifrado,
-    email_replied:replied_message?.user?.email,
+    //email_replied:replied_message?.user?.email,
+    email_replied:replied_message?.user?.firstname == "" ? replied_message?.user?.email: replied_message?.user?.firstname,
+    message_replied:replied_message?.message,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:true
@@ -132,7 +148,9 @@ function sendTextForwardedFile(req, res) {
     message,
     type: "FILE",
     tipo_cifrado:tipo_cifrado,
-    email_replied:replied_message?.user?.email,
+    //email_replied:replied_message?.user?.email,
+    email_replied:replied_message?.user?.firstname == "" ? replied_message?.user?.email: replied_message?.user?.firstname,
+    message_replied:replied_message?.message,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:true
