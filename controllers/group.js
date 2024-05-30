@@ -232,6 +232,8 @@ async function banParticipant(req, res) {
 
   await Group.findByIdAndUpdate(group_id, newData);
 
+  io.sockets.in(user_id.toString()).emit("group_banned", newData);
+
   res.status(200).send({ msg: "Baneo con existo" });
 }
 
