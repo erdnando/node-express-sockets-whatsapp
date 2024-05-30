@@ -359,6 +359,7 @@ console.log("receiving file in server...")
         
             if(userId._id.toString() !== user_id)
             io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+            //io.sockets.in(`${userId._id.toString()}_pushed`).emit("pushing_notification", data);
           });
 
 

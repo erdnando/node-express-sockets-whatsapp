@@ -206,9 +206,11 @@ async function addParticipants(req, res) {
   arrayObjectIds.forEach((user_id) => {
     console.log("user_id invitado")
     console.log(user_id.toString())
-    console.log("datos dle grupo")
+    console.log("datos del grupo")
     console.log(newData)
-   io.sockets.in(user_id.toString()).emit("message_invite", newData);
+    console.log("emiting to:", user_id.toString())
+   //io.sockets.in(user_id.toString()).emit("message_invite", newData);
+   io.sockets.in(`${user_id.toString()}_invite`).emit("message_invite", newData);
   });
 
   res.status(200).send({ msg: "Participantes añadidos correctamente" });
@@ -233,7 +235,8 @@ async function banParticipant(req, res) {
   await Group.findByIdAndUpdate(group_id, newData);
 
   console.log("Baneando a", user_id.toString())
-  io.sockets.in(user_id.toString()).emit("group_banned", newData);
+  //io.sockets.in(user_id.toString()).emit("group_banned", newData);
+  io.sockets.in(`${user_id.toString()}_banned`).emit("group_banned", newData);
 
   res.status(200).send({ msg: "Baneo con existo" });
 }
