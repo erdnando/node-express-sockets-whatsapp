@@ -17,6 +17,7 @@ api.delete("/group/message/delete", [mdAuth.asureAuth], GroupMessageController.d
 api.post("/group/message/image",  [mdAuth.asureAuth, mdUpload],  GroupMessageController.sendImage);
 api.post("/group/message/file",  [mdAuth.asureAuth, mdUploadFile],  GroupMessageController.sendFile);
 api.get( "/group/message/:group_id",  [mdAuth.asureAuth],  GroupMessageController.getAll);
+api.get( "/group/message/filtered/:group_id/:fecha",  [mdAuth.asureAuth],  GroupMessageController.getFiltered);
 api.get( "/group/message/total/:group_id", [mdAuth.asureAuth],  GroupMessageController.getTotalMessages);
 api.get("/group/message/last/:group_id", [mdAuth.asureAuth],  GroupMessageController.getLastMessage);
 

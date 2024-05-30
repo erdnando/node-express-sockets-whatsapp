@@ -373,9 +373,46 @@ console.log("receiving file in server...")
   });
 }
 //=================================================================================================================
+
+async function getFiltered(req, res) {
+
+  const { group_id, fecha } = req.params;
+  console.log(group_id)
+  console.log(fecha)
+
+  let messages=undefined;
+  let total=undefined;
+  try {
+    if(fecha == undefined){
+      //filtered by group
+       messages = await GroupMessage.find({ group: group_id })
+      .sort({ createdAt: 1 })
+      .populate("user");
+
+       total = await GroupMessage.find({ group: group_id }).count();
+
+    }else{
+  
+       messages = await GroupMessage.find({ group: group_id, createdAt: { $gte: new Date(fecha).toISOString()  }   })
+      .sort({ createdAt: 1 })
+      .populate("user");
+
+       total = await GroupMessage.find({group: group_id, createdAt:{ $gte: new Date(fecha).toISOString()  }   }).count();
+    }
+    
+
+    res.status(200).send({ messages, total });
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ msg: "Error del servidor" });
+  }
+}
+
 async function getAll(req, res) {
 
   const { group_id } = req.params;
+  console.log(group_id)
 
   try {
     const messages = await GroupMessage.find({ group: group_id })
@@ -390,6 +427,7 @@ async function getAll(req, res) {
     res.status(500).send({ msg: "Error del servidor" });
   }
 }
+
 //=================================================================================================================
 async function getTotalMessages(req, res) {
 
@@ -433,6 +471,7 @@ export const GroupMessageController = {
   deleteMessage,
   sendImage,
   getAll,
+  getFiltered,
   getTotalMessages,
   getLastMessage,
 };
