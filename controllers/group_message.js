@@ -379,11 +379,13 @@ async function getFiltered(req, res) {
   const { group_id, fecha } = req.params;
   console.log(group_id)
   console.log(fecha)
+  console.log(fecha === undefined)
 
   let messages=undefined;
   let total=undefined;
   try {
-    if(fecha == undefined){
+    if(fecha === "undefined" || fecha === "undefined" || fecha === null){
+      console.log("sin fecha")
       //filtered by group
        messages = await GroupMessage.find({ group: group_id })
       .sort({ createdAt: 1 })
@@ -392,7 +394,7 @@ async function getFiltered(req, res) {
        total = await GroupMessage.find({ group: group_id }).count();
 
     }else{
-  
+      console.log("con fecha")
        messages = await GroupMessage.find({ group: group_id, createdAt: { $gte: new Date(fecha).toISOString()  }   })
       .sort({ createdAt: 1 })
       .populate("user");
