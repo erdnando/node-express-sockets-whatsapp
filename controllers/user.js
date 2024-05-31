@@ -101,7 +101,7 @@ async function getAlias(req, res) {
     const response = await User.find({firstname:alias.toLowerCase() });
 
     if (!response) {
-      res.status(400).send({ msg: "No se ha encontrado el alias (getAlias)" });
+      res.status(400).send({ msg: "No se ha encontrado el alias (getAlias)." });
     } else {
 
       console.log("response")
@@ -109,7 +109,7 @@ async function getAlias(req, res) {
       res.status(200).send(response);
     }
   } catch (error) {
-    res.status(500).send({ msg: "Error del servidor" });
+    res.status(500).send({ msg: "Error del servidor." });
   }
 }
 
