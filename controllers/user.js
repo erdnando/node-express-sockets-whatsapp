@@ -89,6 +89,30 @@ async function getUser(req, res) {
   }
 }
 
+//=================================================================================================================================
+async function getAlias(req, res) {
+  const { alias } = req.params;
+  console.log("==============");
+  console.log(alias.toLowerCase());
+  console.log(req.user);
+  console.log(req.params);
+
+  try {
+    const response = await User.find({firstname:alias.toLowerCase() });
+
+    if (!response) {
+      res.status(400).send({ msg: "No se ha encontrado el alias (getAlias)" });
+    } else {
+
+      console.log("response")
+      console.log(response)
+      res.status(200).send(response);
+    }
+  } catch (error) {
+    res.status(500).send({ msg: "Error del servidor" });
+  }
+}
+
 //============================================================================================================
 async function updateUser(req, res) {
   const { user_id } = req.user;
@@ -142,6 +166,7 @@ export const UserController = {
   getMe,
   getUsers,
   getUser,
+  getAlias,
   updateUser,
   getUsersExeptParticipantsGroup,
   getAllUsers

@@ -12,6 +12,7 @@ api.patch("/user/me", [mdAuth.asureAuth, mdUpload], UserController.updateUser);
 api.get("/user", [mdAuth.asureAuth], UserController.getUsers);
 api.get("/user/all", [mdAuth.asureAuth], UserController.getAllUsers);
 api.get("/user/:id", [mdAuth.asureAuth], UserController.getUser);
+api.get("/user/alias/:alias", [mdAuth.asureAuth], UserController.getAlias);
 api.get(
   "/users_exept_participants_group/:group_id",
   [mdAuth.asureAuth],
