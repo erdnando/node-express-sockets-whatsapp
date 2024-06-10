@@ -13,6 +13,7 @@ api.get("/group", [mdAuth.asureAuth], GroupController.getAll);
 api.get("/group/:id", [mdAuth.asureAuth], GroupController.getGroup);
 api.get("/group/participants/total/:id", [mdAuth.asureAuth], GroupController.getGroupParticipants);
 api.patch("/group/exit/:id", [mdAuth.asureAuth], GroupController.exitGroup);
+api.get("/group/alias/:alias", [mdAuth.asureAuth], GroupController.getAlias);
 api.patch(
   "/group/add_participants/:id",
   [mdAuth.asureAuth],

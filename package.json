@@ -1,10 +1,14 @@
 {
+  "license": "MIT",
+  "licenses":[   {
+    "license": "MIT"
+  }],
   "name": "chatapp-server",
   "version": "0.0.1",
   "description": "ChatApp server",
   "main": "index.js",
   "author": "Erdnando Rodriguez Vargas",
-  "license": "MIT",
+  
   "type": "module",
   "scripts": {
     "start": "node ./index.js",

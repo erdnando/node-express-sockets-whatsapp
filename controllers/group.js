@@ -110,6 +110,29 @@ function getGroup(req, res) {
   }).populate("participants");
 }
 
+//=============================================================================================
+async function getAlias(req, res) {
+  const { alias } = req.params;
+  console.log("==============");
+  console.log(alias);
+  console.log(req.user);
+  console.log(req.params);
+
+  try {
+    const response = await Group.find({name:alias });
+
+    if (!response) {
+      res.status(400).send({ msg: "No se ha encontrado el alias (getAlias)." });
+    } else {
+
+      console.log("response")
+      console.log(response)
+      res.status(200).send(response);
+    }
+  } catch (error) {
+    res.status(500).send({ msg: "Error del servidor." });
+  }
+}
 //======================================here=====================================================================================
 
 async function getGroupParticipants(req, res) {
@@ -248,6 +271,7 @@ export const GroupController = {
   create,
   createAuto,
   getAll,
+  getAlias,
   getGroup,
   updateGroup,
   exitGroup,

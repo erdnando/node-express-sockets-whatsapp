@@ -31,6 +31,7 @@ function register(req, res) {
 
 //===========auth/login===================================================================
 function login(req, res) {
+  console.log("login")
   const { email, password } = req.body;
   console.log(req.body);
 

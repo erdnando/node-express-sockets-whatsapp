@@ -8,7 +8,7 @@ mongoose.set("strictQuery", false);
 
 const mongoDbUrl = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/`;
 
-const mongoDbLocal = "mongodb://localhost/chatApp";
+const mongoDbLocal = "mongodb://192.168.0.34:27017/chatapp";
 
 mongoose.connect(mongoDbUrl, (error) => {
   if (error) throw error;
