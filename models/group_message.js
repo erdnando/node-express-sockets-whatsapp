@@ -19,7 +19,8 @@ const GroupMessageSchema = mongoose.Schema(
     email_replied:String,
     message_replied:String,
     tipo_cifrado_replied:String,
-    forwarded:Boolean
+    forwarded:Boolean,
+    estatus:String,
     /*replied_message:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "GroupMessage",

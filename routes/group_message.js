@@ -20,5 +20,6 @@ api.get( "/group/message/:group_id",  [mdAuth.asureAuth],  GroupMessageControlle
 api.get( "/group/message/filtered/:group_id/:fecha",  [mdAuth.asureAuth],  GroupMessageController.getFiltered);
 api.get( "/group/message/total/:group_id", [mdAuth.asureAuth],  GroupMessageController.getTotalMessages);
 api.get("/group/message/last/:group_id", [mdAuth.asureAuth],  GroupMessageController.getLastMessage);
+api.post("/group/message/notify_read", [mdAuth.asureAuth], GroupMessageController.notify_read);
 
 export const groupMessageRoutes = api;

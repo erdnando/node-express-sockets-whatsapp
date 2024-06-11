@@ -2,8 +2,33 @@ import { GroupMessage, Group } from "../models/index.js";
 import { io, getFilePath } from "../utils/index.js";
 
 //=================================================================================================================
-function sendText(req, res) {
 
+
+async function notify_read(req, res) {
+
+  const { idUser, idMsg } = req.body;
+  
+  const { user_id } = req.user;//el q lo leyo
+
+  const messageRef = await GroupMessage.findById({ _id: idMsg });
+  console.log(messageRef);
+  messageRef.estatus="LEIDO";
+  //["NOLEIDO", "LEIDO","PENDIENTE"],
+  
+
+  GroupMessage.findByIdAndUpdate({ _id: idMsg }, messageRef, (error) => {
+    if (error) {
+      res.status(400).send({ msg: "Error al actualizar el mensaje" });
+    } else {
+      io.sockets.in(idUser.toString()).emit("read_messages", idMsg);
+      res.status(201).send(true);
+    }
+  });
+
+}
+
+function sendText(req, res) {
+console.log("sendText:::::::::::::::::::::::::::::::::::::::::::::")
   const { group_id, message,tipo_cifrado,replied_message,forwarded } = req.body;
   
   const { user_id } = req.user;
@@ -17,7 +42,8 @@ function sendText(req, res) {
     email_replied:replied_message?.user?.firstname == "" ? replied_message?.user?.email: replied_message?.user?.firstname,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
-    forwarded:forwarded
+    forwarded:forwarded,
+    estatus:"NOLEIDO"
   });
 
   console.log("---------------------------------")
@@ -62,13 +88,7 @@ function sendText(req, res) {
               console.log("emitiendo a:", userId._id.toString())
               io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
             }
-           
-
          });
-
-          
-          
-
           res.status(201).send({});
 
         }
@@ -93,7 +113,8 @@ function sendTextForwardedImage(req, res) {
     message_replied:replied_message?.message,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
-    forwarded:true
+    forwarded:true,
+    estatus:"NOLEIDO"
   });
 
   group_message.save(async (error) => {
@@ -153,7 +174,8 @@ function sendTextForwardedFile(req, res) {
     message_replied:replied_message?.message,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
-    forwarded:true
+    forwarded:true,
+    estatus:"NOLEIDO"
   });
 
   group_message.save(async (error) => {
@@ -280,6 +302,7 @@ console.log("receiving image in server...")
     user: user_id,
     message: getFilePath(req.files.image),
     type: "IMAGE",
+    estatus:"NOLEIDO"
   });
 
   console.log(group_message); 
@@ -330,6 +353,7 @@ console.log("receiving file in server...")
     user: user_id,
     message: getFilePath(req.files.file),
     type: "FILE",
+    estatus:"NOLEIDO"
   });
 
   console.log(group_message);  
@@ -380,6 +404,7 @@ console.log("receiving file in server...")
 async function getFiltered(req, res) {
 
   const { group_id, fecha } = req.params;
+
   console.log(group_id)
   console.log(fecha)
   console.log(fecha === undefined)
@@ -404,6 +429,8 @@ async function getFiltered(req, res) {
 
        total = await GroupMessage.find({group: group_id, createdAt:{ $gte: new Date(fecha).toISOString()  }   }).count();
     }
+    
+
     
 
     res.status(200).send({ messages, total });
@@ -440,6 +467,12 @@ async function getTotalMessages(req, res) {
 
   try {
     const total = await GroupMessage.find({ group: group_id }).count();
+
+    //TODO
+    //notify by socket, messages have been read on this groupId
+    //io.sockets.in(group_id).emit("reloadmsgs", true);
+
+
     res.status(200).send(JSON.stringify(total));
 
   } catch (error) {
@@ -479,4 +512,5 @@ export const GroupMessageController = {
   getFiltered,
   getTotalMessages,
   getLastMessage,
+  notify_read
 };
