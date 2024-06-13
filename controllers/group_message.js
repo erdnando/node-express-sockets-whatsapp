@@ -12,6 +12,11 @@ async function notify_read(req, res) {
 
   const messageRef = await GroupMessage.findById({ _id: idMsg });
   console.log(messageRef);
+
+  if(messageRef == null){
+    res.status(201).send(true);
+    return;
+  }
   messageRef.estatus="LEIDO";
   //["NOLEIDO", "LEIDO","PENDIENTE"],
   
