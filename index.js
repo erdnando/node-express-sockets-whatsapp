@@ -27,10 +27,16 @@ mongoose.connect(mongoDbUrl, (error) => {
       });
 
       socket.on("subscribe", (room) => {
+        console.log("subscribe room");
+        console.log(room);
+        
         socket.join(room);
       });
 
       socket.on("unsubscribe", (room) => {
+        console.log("unsubscribe room");
+        console.log(room);
+
         socket.leave(room);
       });
     });

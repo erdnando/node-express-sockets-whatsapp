@@ -7,15 +7,18 @@ import { io, getFilePath } from "../utils/index.js";
 async function notify_read(req, res) {
 
   const { idUser, idMsg } = req.body;
-  
-  const { user_id } = req.user;//el q lo leyo
+  //idUser --> es el q lo leyo
+  const { user_id } = req.user;//el q avisa q alguien lo lleyo
 
   const messageRef = await GroupMessage.findById({ _id: idMsg });
   console.log(messageRef);
 
   if(messageRef == null){
-    res.status(201).send(true);
+    console.log("message id no encontrado!!!!!!!")
+    res.status(201).send(false);
     return;
+  }else{
+    console.log("mensaje is SI encontrado")
   }
   messageRef.estatus="LEIDO";
   //["NOLEIDO", "LEIDO","PENDIENTE"],
@@ -25,6 +28,7 @@ async function notify_read(req, res) {
     if (error) {
       res.status(400).send({ msg: "Error al actualizar el mensaje" });
     } else {
+      console.log("Enviando a "+idUser.toString() + " para el socket read_messages")
       io.sockets.in(idUser.toString()).emit("read_messages", idMsg);
       res.status(201).send(true);
     }
@@ -33,10 +37,11 @@ async function notify_read(req, res) {
 }
 
 function sendText(req, res) {
-console.log("sendText:::::::::::::::::::::::::::::::::::::::::::::")
+
+  console.log("sendText:::::::::::::::::::::::::::::::::::::::::::::")
   const { group_id, message,tipo_cifrado,replied_message,forwarded } = req.body;
   
-  const { user_id } = req.user;
+  const { user_id } = req.user;//user who send the message
 
   const group_message = new GroupMessage({
     group: group_id,
@@ -59,15 +64,9 @@ console.log("sendText:::::::::::::::::::::::::::::::::::::::::::::")
       group_message.save(async (error) => {
 
         if (error) {
-
           res.status(500).send({ msg: "Error del servidor" });
-
         } else {
-
           let  data = await group_message.populate(["user"]);
-
-        
-           
 
           console.log("==================GroupMessage===================");
           console.log(data);
