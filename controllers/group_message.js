@@ -490,6 +490,29 @@ async function getAll(req, res) {
   }
 }
 
+
+async function updateMessageGroup(req, res) {
+
+  const { group_id } = req.params;
+  console.log("Actualizando estatus del grupo:::")
+  console.log(group_id)
+
+  try {
+    //const messages = await GroupMessage.find({ group: group_id });
+
+    GroupMessage.updateMany({group: group_id }, {estatus: 'LEIDO'}, (error) => {
+      if (error) {
+        res.status(400).send({ msg: "Error al actualizar estatus de LEIDO" });
+      } else {
+        res.status(201).send(true);
+      }
+    });
+
+  } catch (error) {
+    res.status(500).send({ msg: "Error del servidor" });
+  }
+}
+
 //=================================================================================================================
 async function getTotalMessages(req, res) {
 
@@ -534,6 +557,7 @@ export const GroupMessageController = {
   deleteMessage,
   sendImage,
   getAll,
+  updateMessageGroup,
   getFiltered,
   getTotalMessages,
   getLastMessage,
