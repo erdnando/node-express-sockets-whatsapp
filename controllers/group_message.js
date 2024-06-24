@@ -3,7 +3,6 @@ import { io, getFilePath } from "../utils/index.js";
 
 //=================================================================================================================
 
-
 async function notify_read(req, res) {
 
   const { idUser, idMsg } = req.body;
@@ -21,6 +20,7 @@ async function notify_read(req, res) {
     console.log("mensaje is SI encontrado")
   }
   messageRef.estatus="LEIDO";
+  
   //["NOLEIDO", "LEIDO","PENDIENTE"],
   
 
@@ -72,8 +72,8 @@ function sendText(req, res) {
           console.log(data);
           console.log("Enviando al grupo::::::")
           console.log(group_id)
-          io.sockets.in(group_id).emit("message", data);
-          io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
+          //io.sockets.in(group_id).emit("message", data);
+         // io.sockets.in(`${group_id}_notify`).emit("message_notify", data);//ok
 
 
          //get all members of the group
@@ -88,9 +88,20 @@ function sendText(req, res) {
             console.log(userId._id.toString() == user_id)
             console.log(userId._id.toString() === user_id)
 
+            //backup
+            /*if(userId._id.toString() !== user_id){
+              console.log("emitiendo a:", userId._id.toString())
+              io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+            }*/
+            //Envia push notification a los miembros del grupo, menos al que lo origino
             if(userId._id.toString() !== user_id){
               console.log("emitiendo a:", userId._id.toString())
               io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+            }
+           //Envia push notification al que lo origino
+            if(userId._id.toString() == user_id){
+              console.log("emitiendo a:", userId._id.toString())
+              io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
             }
          });
           res.status(201).send({});
@@ -135,13 +146,9 @@ function sendTextForwardedImage(req, res) {
       console.log("==================GroupMessage===================");
       console.log(data);
       console.log("Enviando al grupo::::::"+group_id)
-      io.sockets.in(group_id).emit("message", data);
-      io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
+      //io.sockets.in(group_id).emit("message", data);
+      //io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
       
-      
-
-
-
        //get all members of the group
        const response = await Group.findById({ _id: group_id }).populate("participants");
        response.participants.forEach((userId) => {
@@ -149,11 +156,19 @@ function sendTextForwardedImage(req, res) {
          console.log(userId._id.toString())
          console.log(user_id)
      
-         if(userId._id.toString() !== user_id)
-         io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+         //if(userId._id.toString() !== user_id)
+         //io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+          //Envia push notification a los miembros del grupo, menos al que lo origino
+          if(userId._id.toString() !== user_id){
+            console.log("emitiendo a:", userId._id.toString())
+            io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+          }
+         //Envia push notification al que lo origino
+          if(userId._id.toString() == user_id){
+            console.log("emitiendo a:", userId._id.toString())
+            io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
+          }
        });
-
-
 
       res.status(201).send({});
 
@@ -196,12 +211,9 @@ function sendTextForwardedFile(req, res) {
       console.log("==================GroupMessage===================");
       console.log(data);
       console.log("Enviando al grupo::::::"+group_id)
-      io.sockets.in(group_id).emit("message", data);
-      io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
+      //io.sockets.in(group_id).emit("message", data);
+      //io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
       
-
-
-
        //get all members of the group
        const response = await Group.findById({ _id: group_id }).populate("participants");
        response.participants.forEach((userId) => {
@@ -209,11 +221,19 @@ function sendTextForwardedFile(req, res) {
          console.log(userId._id.toString())
          console.log(user_id)
      
-         if(userId._id.toString() !== user_id)
-         io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+         //if(userId._id.toString() !== user_id)
+         //io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+          //Envia push notification a los miembros del grupo, menos al que lo origino
+          if(userId._id.toString() !== user_id){
+            console.log("emitiendo a:", userId._id.toString())
+            io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+          }
+         //Envia push notification al que lo origino
+          if(userId._id.toString() == user_id){
+            console.log("emitiendo a:", userId._id.toString())
+            io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
+          }
        });
-
-
 
       res.status(201).send({});
 
@@ -321,10 +341,8 @@ console.log("receiving image in server...")
 
       const data = await group_message.populate("user");
 
-      io.sockets.in(group_id).emit("message", data);
-      io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
-
-
+      //io.sockets.in(group_id).emit("message", data);
+      //io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
 
        //get all members of the group
        const response = await Group.findById({ _id: group_id }).populate("participants");
@@ -333,11 +351,19 @@ console.log("receiving image in server...")
          console.log(userId._id.toString())
          console.log(user_id)
      
-         if(userId._id.toString() !== user_id)
-         io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+         //if(userId._id.toString() !== user_id)
+         //io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+          //Envia push notification a los miembros del grupo, menos al que lo origino
+          if(userId._id.toString() !== user_id){
+            console.log("emitiendo a:", userId._id.toString())
+            io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+          }
+         //Envia push notification al que lo origino
+          if(userId._id.toString() == user_id){
+            console.log("emitiendo a:", userId._id.toString())
+            io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
+          }
        });
-
-
 
       res.status(201).send({});
 
@@ -372,11 +398,8 @@ console.log("receiving file in server...")
 
       const data = await group_message.populate("user");
 
-      io.sockets.in(group_id).emit("message", data);
-      io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
-
-
-
+      //io.sockets.in(group_id).emit("message", data);
+      //io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
 
        //get all members of the group
 
@@ -387,19 +410,22 @@ console.log("receiving file in server...")
             console.log(userId._id.toString())
             console.log(user_id)
         
-            if(userId._id.toString() !== user_id)
-            io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
-            //io.sockets.in(`${userId._id.toString()}_pushed`).emit("pushing_notification", data);
+            //if(userId._id.toString() !== user_id)
+            //io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+             //Envia push notification a los miembros del grupo, menos al que lo origino
+             if(userId._id.toString() !== user_id){
+              console.log("emitiendo a:", userId._id.toString())
+              io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+            }
+           //Envia push notification al que lo origino
+            if(userId._id.toString() == user_id){
+              console.log("emitiendo a:", userId._id.toString())
+              io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
+            }
+
           });
 
-
-
-
-     
       res.status(201).send({});
-      //res.status(201).send(data);
-      
-
     }
   });
 }
@@ -471,11 +497,6 @@ async function getTotalMessages(req, res) {
 
   try {
     const total = await GroupMessage.find({ group: group_id }).count();
-
-    //TODO
-    //notify by socket, messages have been read on this groupId
-    //io.sockets.in(group_id).emit("reloadmsgs", true);
-
 
     res.status(200).send(JSON.stringify(total));
 
