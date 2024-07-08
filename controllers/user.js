@@ -6,20 +6,20 @@ import { getFilePath } from "../utils/index.js";
 async function getMe(req, res) {
   const { user_id } = req.user;
 
-  console.log("req.user")
-  console.log(req.user)
+  //console.log("req.user")
+  //console.log(req.user)
   
 
   try {
-    console.log(req.user)
-    console.log("buscando por:::::::::user_id");
-    console.log(user_id);
+   // console.log(req.user)
+   // console.log("buscando por:::::::::user_id");
+   // console.log(user_id);
 
     //get user data without -password
     const response = await User.findById(user_id).select(["-password"]);
 
-    console.log("response:::::::");
-    console.log(response);
+    //console.log("response:::::::");
+   // console.log(response);
 
 
 
@@ -71,10 +71,10 @@ async function getAllUsers(req, res) {
 //============================================================================================================
 async function getUser(req, res) {
   const { id } = req.params;
-  console.log("==============");
-  console.log(id);
-  console.log(req.user);
-  console.log(req.params);
+  //console.log("==============");
+ // console.log(id);
+ // console.log(req.user);
+ // console.log(req.params);
 
   try {
     const response = await User.findById(id).select(["-password"]);
@@ -92,10 +92,10 @@ async function getUser(req, res) {
 //=================================================================================================================================
 async function getAlias(req, res) {
   const { alias } = req.params;
-  console.log("==============");
-  console.log(alias.toLowerCase());
-  console.log(req.user);
-  console.log(req.params);
+  //console.log("==============");
+ // console.log(alias.toLowerCase());
+  //console.log(req.user);
+  //console.log(req.params);
 
   try {
     const response = await User.find({firstname:alias.toLowerCase() });
@@ -104,8 +104,8 @@ async function getAlias(req, res) {
       res.status(400).send({ msg: "No se ha encontrado el alias (getAlias)." });
     } else {
 
-      console.log("response")
-      console.log(response)
+     // console.log("response")
+     // console.log(response)
       res.status(200).send(response);
     }
   } catch (error) {
@@ -118,8 +118,8 @@ async function updateUser(req, res) {
   const { user_id } = req.user;
   //get complete body with file
   const userData = req.body;
-  console.log("Actualizando user data");
-  console.log(req.body);
+  //console.log("Actualizando user data");
+  //console.log(req.body);
 
   if (req.files.avatar) {
     const imagePath = getFilePath(req.files.avatar);
@@ -144,11 +144,11 @@ async function getUsersExeptParticipantsGroup(req, res) {
   const group = await Group.findById(group_id);
   const participantsStrings = group.participants.toString();
   const participants = participantsStrings.split(",");
-  console.log("participants")
-  console.log(participants)
-  console.log("group_id")
+  //console.log("participants")
+ // console.log(participants)
+  //console.log("group_id")
   console.log(group_id)
-
+//
   const response = await User.find({ _id: { $nin: participants } }).select([
     "-password",
   ]);

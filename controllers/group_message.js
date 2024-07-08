@@ -10,14 +10,14 @@ async function notify_read(req, res) {
   const { user_id } = req.user;//el q avisa q alguien lo lleyo
 
   const messageRef = await GroupMessage.findById({ _id: idMsg });
-  console.log(messageRef);
+  //console.log(messageRef);
 
   if(messageRef == null){
-    console.log("message id no encontrado!!!!!!!")
+   // console.log("message id no encontrado!!!!!!!")
     res.status(201).send(false);
     return;
   }else{
-    console.log("mensaje is SI encontrado")
+    //console.log("mensaje is SI encontrado")
   }
   messageRef.estatus="LEIDO";
   
@@ -28,7 +28,7 @@ async function notify_read(req, res) {
     if (error) {
       res.status(400).send({ msg: "Error al actualizar el mensaje" });
     } else {
-      console.log("Enviando a "+idUser.toString() + " para el socket read_messages")
+     // console.log("Enviando a "+idUser.toString() + " para el socket read_messages")
       io.sockets.in(idUser.toString()).emit("read_messages", idMsg);
       res.status(201).send(true);
     }
@@ -38,7 +38,7 @@ async function notify_read(req, res) {
 
 function sendText(req, res) {
 
-  console.log("sendText:::::::::::::::::::::::::::::::::::::::::::::")
+  //console.log("sendText:::::::::::::::::::::::::::::::::::::::::::::")
   const { group_id, message,tipo_cifrado,replied_message,forwarded } = req.body;
   
   const { user_id } = req.user;//user who send the message
@@ -56,10 +56,10 @@ function sendText(req, res) {
     estatus:"NOLEIDO"
   });
 
-  console.log("---------------------------------")
-  console.log(replied_message?.user?.firstname)
-  console.log(replied_message?.user?.email)
-  console.log("---------------------------------")
+  //console.log("---------------------------------")
+ // console.log(replied_message?.user?.firstname)
+ // console.log(replied_message?.user?.email)
+ // console.log("---------------------------------")
 
       group_message.save(async (error) => {
 
@@ -68,39 +68,33 @@ function sendText(req, res) {
         } else {
           let  data = await group_message.populate(["user"]);
 
-          console.log("==================GroupMessage===================");
-          console.log(data);
-          console.log("Enviando al grupo::::::")
-          console.log(group_id)
-          //io.sockets.in(group_id).emit("message", data);
-         // io.sockets.in(`${group_id}_notify`).emit("message_notify", data);//ok
-
+        //  console.log("==================GroupMessage===================");
+        //  console.log(data);
+        //  console.log("Enviando al grupo::::::")
+        //  console.log(group_id)
+        
 
          //get all members of the group
          const response = await Group.findById({ _id: group_id }).populate("participants");
 
          response.participants.forEach((userId) => {
 
-            console.log("userId del grupo")
-            console.log(userId._id.toString())
-            console.log(user_id)
+           // console.log("userId del grupo")
+          //  console.log(userId._id.toString())
+           // console.log(user_id)
         
-            console.log(userId._id.toString() == user_id)
-            console.log(userId._id.toString() === user_id)
+           // console.log(userId._id.toString() == user_id)
+           // console.log(userId._id.toString() === user_id)
 
-            //backup
-            /*if(userId._id.toString() !== user_id){
-              console.log("emitiendo a:", userId._id.toString())
-              io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
-            }*/
+           console.log(io.sockets.adapter.rooms)
             //Envia push notification a los miembros del grupo, menos al que lo origino
             if(userId._id.toString() !== user_id){
-              console.log("emitiendo a:", userId._id.toString())
+              console.log("emitiendo a (members):", userId._id.toString())
               io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
             }
            //Envia push notification al que lo origino
             if(userId._id.toString() == user_id){
-              console.log("emitiendo a:", userId._id.toString())
+              console.log("emitiendo a (owner):", userId._id.toString())
               io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
             }
          });
@@ -143,29 +137,28 @@ function sendTextForwardedImage(req, res) {
       let  data = await group_message.populate(["user"]);
 
      
-      console.log("==================GroupMessage===================");
-      console.log(data);
-      console.log("Enviando al grupo::::::"+group_id)
-      //io.sockets.in(group_id).emit("message", data);
-      //io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
+    //  console.log("==================GroupMessage===================");
+    //  console.log(data);
+    //  console.log("Enviando al grupo::::::"+group_id)
+     
       
        //get all members of the group
        const response = await Group.findById({ _id: group_id }).populate("participants");
        response.participants.forEach((userId) => {
-         console.log("userId del grupo")
-         console.log(userId._id.toString())
-         console.log(user_id)
+        // console.log("userId del grupo")
+        // console.log(userId._id.toString())
+        // console.log(user_id)
      
          //if(userId._id.toString() !== user_id)
-         //io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+      
           //Envia push notification a los miembros del grupo, menos al que lo origino
           if(userId._id.toString() !== user_id){
-            console.log("emitiendo a:", userId._id.toString())
+           // console.log("emitiendo a:", userId._id.toString())
             io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
           }
          //Envia push notification al que lo origino
           if(userId._id.toString() == user_id){
-            console.log("emitiendo a:", userId._id.toString())
+           // console.log("emitiendo a:", userId._id.toString())
             io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
           }
        });
@@ -208,29 +201,29 @@ function sendTextForwardedFile(req, res) {
       let  data = await group_message.populate(["user"]);
 
      
-      console.log("==================GroupMessage===================");
-      console.log(data);
-      console.log("Enviando al grupo::::::"+group_id)
+      //console.log("==================GroupMessage===================");
+      //console.log(data);
+     // console.log("Enviando al grupo::::::"+group_id)
       //io.sockets.in(group_id).emit("message", data);
       //io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
       
        //get all members of the group
        const response = await Group.findById({ _id: group_id }).populate("participants");
        response.participants.forEach((userId) => {
-         console.log("userId del grupo")
-         console.log(userId._id.toString())
-         console.log(user_id)
+        // console.log("userId del grupo")
+        // console.log(userId._id.toString())
+        // console.log(user_id)
      
          //if(userId._id.toString() !== user_id)
-         //io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+        
           //Envia push notification a los miembros del grupo, menos al que lo origino
           if(userId._id.toString() !== user_id){
-            console.log("emitiendo a:", userId._id.toString())
+           // console.log("emitiendo a:", userId._id.toString())
             io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
           }
          //Envia push notification al que lo origino
           if(userId._id.toString() == user_id){
-            console.log("emitiendo a:", userId._id.toString())
+           // console.log("emitiendo a:", userId._id.toString())
             io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
           }
        });
@@ -249,19 +242,37 @@ async function sendTextUpdateCrypt(req, res) {
   const { user_id } = req.user;
 
   const messageRef = await GroupMessage.findById({ _id: idMessage }).populate("user");
-  console.log(messageRef);
+  //console.log(messageRef);
   messageRef.message=message;
   messageRef.tipo_cifrado=tipo_cifrado;
-  console.log("==============================");
-  console.log(messageRef);
+ // console.log("==============================");
+ // console.log(messageRef);
 
-  GroupMessage.findByIdAndUpdate({ _id: idMessage }, messageRef, (error) => {
+  GroupMessage.findByIdAndUpdate({ _id: idMessage }, messageRef, async (error) => {
     if (error) {
       res.status(400).send({ msg: "Error al actualizar el mensaje" });
     } else {
       //io.sockets.in(group_id).emit("reloadmsgs", true);
-      res.status(201).send(messageRef);
+      //-----------------sending delete notification all members=========================
+      //get all members of the group
+      const response =  await Group.findById({ _id: group_id }).populate("participants");
+      response.participants.forEach((userId) => {
+
+         //Envia push notification a los miembros del grupo, menos al que lo origino
+         if(userId._id.toString() !== user_id){
+          // console.log("emitiendo a:", userId._id.toString())
+           io.sockets.in(userId._id.toString()).emit("reloadmsgs",  {"group_id":group_id,"idMessage":idMessage, "message":message});
+         }
+        //Envia push notification al que lo origino
+         if(userId._id.toString() == user_id){
+          // console.log("emitiendo a:", userId._id.toString())
+           io.sockets.in(userId._id.toString()).emit("reloadmsgs",  {"group_id":group_id,"idMessage":idMessage, "message":message});
+         }
+      });
+      //===============================================================================
+      res.status(201).send({ msg: "Mensaje eliminado" });
     }
+    
   });
 
 }
@@ -273,17 +284,17 @@ async function sendTextEditado(req, res) {
   const { user_id } = req.user;
 
   const messageRef = await GroupMessage.findById({ _id: idMessage }).populate("user");
-  console.log(messageRef);
+ // console.log(messageRef);
   messageRef.message=message;
   messageRef.tipo_cifrado=tipo_cifrado;
-  console.log("==============================");
-  console.log(messageRef);
+ // console.log("==============================");
+ // console.log(messageRef);
 
   GroupMessage.findByIdAndUpdate({ _id: idMessage }, messageRef, (error) => {
     if (error) {
       res.status(400).send({ msg: "Error al actualizar el mensaje" });
     } else {
-      io.sockets.in(group_id).emit("reloadmsgs", true);
+     // io.sockets.in(group_id).emit("reloadmsgs", true);
       res.status(201).send(messageRef);
     }
   });
@@ -293,19 +304,37 @@ async function sendTextEditado(req, res) {
 //=================================================================================================================
 async function deleteMessage(req, res) {
 
-  const { group_id,idMessage } = req.body;
+  const { group_id,idMessage,message } = req.body;
   
   const { user_id } = req.user;
 
   //const messageRef = await GroupMessage.findById({ _id: idMessage });
-  //console.log(messageRef);
+  console.log("message a borrar:");
+  console.log(message);
   
-  GroupMessage.findByIdAndDelete( {_id: idMessage}, (error) => {
+  GroupMessage.findByIdAndDelete( {_id: idMessage}, async (error) => {
     if (error) {
       console.log(error);
       res.status(400).send({ msg: "Error al eliminar el chat" });
     } else {
-      io.sockets.in(group_id).emit("reloadmsgs", true);
+      //io.sockets.in(group_id).emit("reloadmsgs", true);
+      //-----------------sending delete notification all members=========================
+      //get all members of the group
+      const response =  await Group.findById({ _id: group_id }).populate("participants");
+      response.participants.forEach((userId) => {
+     
+         //Envia push notification a los miembros del grupo, menos al que lo origino
+         if(userId._id.toString() !== user_id){
+           console.log("emitiendo a:", userId._id.toString())
+           io.sockets.in(userId._id.toString()).emit("reloadmsgs",  {"group_id":group_id,"idMessage":idMessage, "message":message});
+         }
+        //Envia push notification al que lo origino
+         if(userId._id.toString() == user_id){
+           console.log("emitiendo a:", userId._id.toString())
+           io.sockets.in(userId._id.toString()).emit("reloadmsgs",  {"group_id":group_id,"idMessage":idMessage, "message":message});
+         }
+      });
+      //===============================================================================
       res.status(201).send({ msg: "Mensaje eliminado" });
     }
   });
@@ -320,7 +349,7 @@ function sendImage(req, res) {
   const { group_id } = req.body;
   const { user_id } = req.user;
 
-console.log("receiving image in server...")
+//console.log("receiving image in server...")
   const group_message = new GroupMessage({
     group: group_id,
     user: user_id,
@@ -329,7 +358,7 @@ console.log("receiving image in server...")
     estatus:"NOLEIDO"
   });
 
-  console.log(group_message); 
+  //console.log(group_message); 
 
   group_message.save(async (error) => {
 
@@ -341,26 +370,24 @@ console.log("receiving image in server...")
 
       const data = await group_message.populate("user");
 
-      //io.sockets.in(group_id).emit("message", data);
-      //io.sockets.in(`${group_id}_notify`).emit("message_notify", data);
-
+      
        //get all members of the group
        const response = await Group.findById({ _id: group_id }).populate("participants");
        response.participants.forEach((userId) => {
-         console.log("userId del grupo")
-         console.log(userId._id.toString())
-         console.log(user_id)
+       //  console.log("userId del grupo")
+       //  console.log(userId._id.toString())
+       //  console.log(user_id)
      
          //if(userId._id.toString() !== user_id)
-         //io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+        
           //Envia push notification a los miembros del grupo, menos al que lo origino
           if(userId._id.toString() !== user_id){
-            console.log("emitiendo a:", userId._id.toString())
+            //console.log("emitiendo a:", userId._id.toString())
             io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
           }
          //Envia push notification al que lo origino
           if(userId._id.toString() == user_id){
-            console.log("emitiendo a:", userId._id.toString())
+           // console.log("emitiendo a:", userId._id.toString())
             io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
           }
        });
@@ -377,7 +404,7 @@ function sendFile(req, res) {
   const { group_id } = req.body;
   const { user_id } = req.user;
 
-console.log("receiving file in server...")
+//console.log("receiving file in server...")
   const group_message = new GroupMessage({
     group: group_id,
     user: user_id,
@@ -386,7 +413,7 @@ console.log("receiving file in server...")
     estatus:"NOLEIDO"
   });
 
-  console.log(group_message);  
+ // console.log(group_message);  
 
   group_message.save(async (error) => {
 
@@ -406,20 +433,20 @@ console.log("receiving file in server...")
 
           const response = await Group.findById({ _id: group_id }).populate("participants");
           response.participants.forEach((userId) => {
-            console.log("userId del grupo")
-            console.log(userId._id.toString())
-            console.log(user_id)
+           // console.log("userId del grupo")
+          //  console.log(userId._id.toString())
+          //  console.log(user_id)
         
             //if(userId._id.toString() !== user_id)
-            //io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+           
              //Envia push notification a los miembros del grupo, menos al que lo origino
              if(userId._id.toString() !== user_id){
-              console.log("emitiendo a:", userId._id.toString())
+            //  console.log("emitiendo a:", userId._id.toString())
               io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
             }
            //Envia push notification al que lo origino
             if(userId._id.toString() == user_id){
-              console.log("emitiendo a:", userId._id.toString())
+             // console.log("emitiendo a:", userId._id.toString())
               io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
             }
 
@@ -435,15 +462,15 @@ async function getFiltered(req, res) {
 
   const { group_id, fecha } = req.params;
 
-  console.log(group_id)
-  console.log(fecha)
-  console.log(fecha === undefined)
+ // console.log(group_id)
+ // console.log(fecha)
+ // console.log(fecha === undefined)
 
   let messages=undefined;
   let total=undefined;
   try {
     if(fecha === "undefined" || fecha === "undefined" || fecha === null){
-      console.log("sin fecha")
+      //console.log("sin fecha")
       //filtered by group
        messages = await GroupMessage.find({ group: group_id })
       .sort({ createdAt: 1 })
@@ -452,7 +479,7 @@ async function getFiltered(req, res) {
        total = await GroupMessage.find({ group: group_id }).count();
 
     }else{
-      console.log("con fecha")
+      //console.log("con fecha")
        messages = await GroupMessage.find({ group: group_id, createdAt: { $gte: new Date(fecha).toISOString()  }   })
       .sort({ createdAt: 1 })
       .populate("user");
@@ -474,7 +501,7 @@ async function getFiltered(req, res) {
 async function getAll(req, res) {
 
   const { group_id } = req.params;
-  console.log(group_id)
+  //console.log(group_id)
 
   try {
     const messages = await GroupMessage.find({ group: group_id })
@@ -494,8 +521,8 @@ async function getAll(req, res) {
 async function updateMessageGroup(req, res) {
 
   const { group_id } = req.params;
-  console.log("Actualizando estatus del grupo:::")
-  console.log(group_id)
+ // console.log("Actualizando estatus del grupo:::")
+ // console.log(group_id)
 
   try {
     //const messages = await GroupMessage.find({ group: group_id });

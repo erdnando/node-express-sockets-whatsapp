@@ -14,9 +14,9 @@ mongoose.connect(mongoDbUrl, (error) => {
   if (error) throw error;
 
   server.listen(PORT, () => {
-    console.log("##################################");
-    console.log("###### API REST SECURE CHAT ######");
-    console.log("##################################");
+    console.log("#####################################");
+    console.log("###### API REST SECURE CHAT MX ######");
+    console.log("#####################################");
     console.log(`http://${IP_SERVER}:${PORT}/api`);
 
     io.sockets.on("connection", (socket) => {
@@ -27,18 +27,26 @@ mongoose.connect(mongoDbUrl, (error) => {
       });
 
       socket.on("subscribe", (room) => {
-        console.log("subscribe room");
+        console.log("=================================");
+        console.log("subscribe channel de: usuario");
         console.log(room);
-        
+        console.log("=================================");
         socket.join(room);
+        console.log("List of channels:::")
+        //console.log(io.sockets.adapter.rooms)
+        console.log(socket.rooms);
       });
 
       socket.on("unsubscribe", (room) => {
-        console.log("unsubscribe room");
-        console.log(room);
+        //console.log("unsubscribe room");
+        //console.log(room);
 
         socket.leave(room);
       });
+
+  
+
+
     });
 
     

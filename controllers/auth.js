@@ -16,8 +16,8 @@ function register(req, res) {
   const hashPassword = bscrypt.hashSync(password, salt);
   user.password = hashPassword;
 
-  console.log("hash generado")
-  console.log(hashPassword)
+  //console.log("hash generado")
+  //console.log(hashPassword)
 
   user.save((error, userStorage) => {
     if (error) {
@@ -31,26 +31,26 @@ function register(req, res) {
 
 //===========auth/login===================================================================
 function login(req, res) {
-  console.log("login")
+ // console.log("login")
   const { email, password } = req.body;
-  console.log(req.body);
+  //console.log(req.body);
 
   const emailLowerCase = email.toLowerCase();
 
   //busca el usuario de manera inicial
   User.findOne({ email: emailLowerCase }, (error, userStorage) => {
     
-    console.log("buscando por email::::")
-    console.log(email)
+    //console.log("buscando por email::::")
+   // console.log(email)
     if (error) {
      
       res.status(500).send({ msg: "Error del servidor" });
     } else 
     {
-      console.log("userStorage:::::::");
-      console.log(userStorage);
+      //console.log("userStorage:::::::");
+      //console.log(userStorage);
       //console.log(error);
-      console.log("---------------");
+      //console.log("---------------");
 
       //si no lo encuentra, regresa empty
       if(userStorage==null){
@@ -67,8 +67,8 @@ function login(req, res) {
             } else {
 
               let token = jwt.createAccessToken(userStorage);
-              console.log("token:::::::::");
-              console.log(token);
+              //console.log("token:::::::::");
+             // console.log(token);
               res.status(200).send({
                 access: token,  //token
                 refresh: jwt.createRefreshToken(userStorage),
@@ -84,14 +84,14 @@ function login(req, res) {
 //===========================================================================================================
 function getToken(req, res) {
   //const { userStorage } = req.body;
-  console.log(req.body);
+ // console.log(req.body);
 
   //const emailLowerCase = email.toLowerCase();
 
-    console.log("userStorage:::::::");
-      console.log(req.body);
+   // console.log("userStorage:::::::");
+    //  console.log(req.body);
       //console.log(error);
-      console.log("---------------");
+     // console.log("---------------");
 
       //si no lo encuentra, regresa empty
       res.status(200).send({

@@ -8,7 +8,7 @@ function create(req, res) {
   const { user_id } = req.user;
   const group = new Group(req.body);
 
-  console.log(req.body);
+  //console.log(req.body);
   group.creator = user_id;
 
   let justCreator = false;
@@ -48,8 +48,8 @@ function createAuto(req, res) {
   group.participants = [...group.participants, user_id];
   group.image = "group/group1.png";
 
-  console.log("group creado automatico:::::::");
-  console.log(group);
+  //console.log("group creado automatico:::::::");
+  //console.log(group);
   
 
   group.save((error, groupStorage) => {
@@ -67,10 +67,10 @@ function createAuto(req, res) {
 
 //===========================================================================================================================
 function getAll(req, res) {
-console.log("getAll");
+//console.log("getAll");
   const { user_id } = req.user;
 
-  console.log("user_id",user_id);
+  //console.log("user_id",user_id);
 
   Group.find({ participants: user_id })
     .populate("creator")
@@ -113,10 +113,10 @@ function getGroup(req, res) {
 //=============================================================================================
 async function getAlias(req, res) {
   const { alias } = req.params;
-  console.log("==============");
-  console.log(alias);
-  console.log(req.user);
-  console.log(req.params);
+  //console.log("==============");
+ // console.log(alias);
+ // console.log(req.user);
+ // console.log(req.params);
 
   try {
     const response = await Group.find({name:alias });
@@ -125,8 +125,8 @@ async function getAlias(req, res) {
       res.status(400).send({ msg: "No se ha encontrado el alias (getAlias)." });
     } else {
 
-      console.log("response")
-      console.log(response)
+      //console.log("response")
+     // console.log(response)
       res.status(200).send(response);
     }
   } catch (error) {
@@ -209,7 +209,7 @@ async function addParticipants(req, res) {
   const group = await Group.findById(id);
   const users = await User.find({ _id: users_id });
 
-  console.log(users_id);
+  //console.log(users_id);
 
   const arrayObjectIds = [];
 
@@ -227,13 +227,14 @@ async function addParticipants(req, res) {
 
   //new
   arrayObjectIds.forEach((user_id) => {
-    console.log("user_id invitado")
-    console.log(user_id.toString())
-    console.log("datos del grupo")
-    console.log(newData)
-    console.log("emiting to:", user_id.toString())
+   // console.log("user_id invitado")
+   // console.log(user_id.toString())
+   // console.log("datos del grupo")
+   // console.log(newData)
+   // console.log("emiting to:", user_id.toString())
    //io.sockets.in(user_id.toString()).emit("message_invite", newData);
-   io.sockets.in(`${user_id.toString()}_invite`).emit("message_invite", newData);
+   io.sockets.in(`${user_id.toString()}`).emit("message_invite", newData);
+   //io.sockets.in(`${user_id.toString()}_invite`).emit("message_invite", newData);
   });
 
   res.status(200).send({ msg: "Participantes añadidos correctamente" });
@@ -257,9 +258,10 @@ async function banParticipant(req, res) {
 
   await Group.findByIdAndUpdate(group_id, newData);
 
-  console.log("Baneando a", user_id.toString())
+  //console.log("Baneando a", user_id.toString())
   //io.sockets.in(user_id.toString()).emit("group_banned", newData);
-  io.sockets.in(`${user_id.toString()}_banned`).emit("group_banned", newData);
+ // io.sockets.in(`${user_id.toString()}_banned`).emit("group_banned", newData);
+  io.sockets.in(`${user_id.toString()}`).emit("group_banned", newData);
 
   res.status(200).send({ msg: "Baneo con existo" });
 }
