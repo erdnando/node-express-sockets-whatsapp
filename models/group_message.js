@@ -21,6 +21,7 @@ const GroupMessageSchema = mongoose.Schema(
     tipo_cifrado_replied:String,
     forwarded:Boolean,
     estatus:String,
+    lectores_message:String,
     /*replied_message:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "GroupMessage",

@@ -5,34 +5,120 @@ import { io, getFilePath } from "../utils/index.js";
 
 async function notify_read(req, res) {
 
-  const { idUser, idMsg } = req.body;
-  //idUser --> es el q lo leyo
-  const { user_id } = req.user;//el q avisa q alguien lo lleyo
+    console.log("notify_read")
+    const { idUser, idMsg, grupoAbierto } = req.body;
 
-  const messageRef = await GroupMessage.findById({ _id: idMsg });
-  //console.log(messageRef);
+    console.log("Trabajando con el idMsg::", idMsg)
+    //idUser --> es el q lo leyo
+    const { user_id } = req.user;//el q avisa q alguien lo lleyo
+    let group_id ='';
+    if(idMsg != undefined){
 
-  if(messageRef == null){
-   // console.log("message id no encontrado!!!!!!!")
-    res.status(201).send(false);
-    return;
-  }else{
-    //console.log("mensaje is SI encontrado")
-  }
-  messageRef.estatus="LEIDO";
-  
-  //["NOLEIDO", "LEIDO","PENDIENTE"],
-  
+        const messageRef = await GroupMessage.findById({ _id: idMsg });
+        console.log("idUser que leyo el mensaje:::");
+        console.log(idUser.toString());
 
-  GroupMessage.findByIdAndUpdate({ _id: idMsg }, messageRef, (error) => {
-    if (error) {
-      res.status(400).send({ msg: "Error al actualizar el mensaje" });
-    } else {
-     // console.log("Enviando a "+idUser.toString() + " para el socket read_messages")
-      io.sockets.in(idUser.toString()).emit("read_messages", idMsg);
-      res.status(201).send(true);
+        if(messageRef == null){
+        console.log("message id no encontrado!!!!!")
+          res.status(400).send(false);
+          return;
+        }
+      //====================================================================================
+          //getting group id
+          group_id = messageRef.group.toString();
+          console.log("group_id:",group_id);
+    }else{
+      group_id = grupoAbierto;
     }
-  });
+   
+    //get number of member in this group
+    const groupParticipants = await Group.findById({ _id: group_id }).populate("participants");
+    const numParticipantes = groupParticipants.participants.length; 
+    console.log("numParticipantes:",numParticipantes);
+
+    //getting all messages of this group
+    const messagesGroup= await GroupMessage.find({ group: group_id });
+    console.log("obteniendo mensajes del grupo")
+    //console.log(messagesGroup)
+  
+    let msgAux="";
+    let coincidencia=false;
+    let aux_lectores_message="";
+
+    try{
+
+      console.log("===================================");
+      console.log(grupoAbierto);
+      console.log(group_id);
+      console.log("===================================");
+
+      if(grupoAbierto == group_id){
+          //looping them & evaluate reader counters
+          
+          messagesGroup.forEach((msgx) => {
+            console.log("looping messagesGroup")
+            msgAux=msgx.message;
+
+            if(msgx.lectores_message== undefined || msgx.lectores_message== null){
+              console.log("valida nulls")
+              coincidencia == false;
+            
+              aux_lectores_message= idUser.toString()+',';//indicating, this user read the message
+            }else{
+              aux_lectores_message=msgx.lectores_message;
+                coincidencia = aux_lectores_message.includes(idUser.toString());
+                console.log("coincidencia");
+                console.log(coincidencia);
+
+                if(coincidencia == false){
+
+                  aux_lectores_message= aux_lectores_message+idUser.toString()+',';
+                  //console.log("anadiendo userid a la lista de leidos:",idUser.toString());
+                  //msgx.lectores_message = aux_lectores_message+idUser.toString()+',';
+                }
+            }
+
+            
+            const numeroVistos = (aux_lectores_message).split(',');
+            console.log("numeroVistos:",numeroVistos.length-1);
+
+            //compare number of mebers vs lecrtores_message split -1
+            if(numeroVistos.length-1 == numParticipantes){
+              msgx.estatus="LEIDO";
+              //algunLeido=true;
+            }
+            else{
+              msgx.estatus="NOLEIDO";
+            }
+            console.log(" msgx.estatus:", msgx.estatus);
+            msgx.lectores_message = aux_lectores_message;
+            console.log("msgx.lectores_messages: ",aux_lectores_message);
+            //-----------------------------------------------------
+              //Updating record
+                 GroupMessage.findByIdAndUpdate({ _id: msgx._id }, msgx, (error) => {
+                  if (error) {
+                    console.log("Crashing kere!!!")
+                    console.log(error)
+                  }else{
+                    console.log("msg actualizado, estatus y lectores_messages");
+                  }
+                }); 
+                console.log("==========================iteration==========================")
+          });//end foreach messages
+          console.log("Actualizacion de mensajes:");
+
+         //emit to members of a group
+          const data={ message:msgAux+"-"+idUser.toString(), group_id:group_id };
+          console.log("Enviando a socket reloadmsgs:");
+          io.sockets.in(`${group_id}`).emit("reloadmsgs", data);
+        //===================================================================
+          
+    }
+    
+      res.status(201).send(true);
+    }catch(err){
+        res.status(400).send({ msg: "Error al actualizar mensajes en estado LEIDO"+ err });
+    }
 
 }
 
@@ -53,7 +139,8 @@ function sendText(req, res) {
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:forwarded,
-    estatus:"NOLEIDO"
+    estatus:"NOLEIDO",
+    lectores_message:""
   });
 
   //console.log("---------------------------------")
@@ -98,6 +185,7 @@ function sendText(req, res) {
               io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
             }
          });
+
           res.status(201).send({});
 
         }
@@ -123,7 +211,8 @@ function sendTextForwardedImage(req, res) {
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:true,
-    estatus:"NOLEIDO"
+    estatus:"NOLEIDO",
+    lectores_message:""
   });
 
   group_message.save(async (error) => {
@@ -187,7 +276,8 @@ function sendTextForwardedFile(req, res) {
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:true,
-    estatus:"NOLEIDO"
+    estatus:"NOLEIDO",
+    lectores_message:""
   });
 
   group_message.save(async (error) => {
@@ -355,7 +445,8 @@ function sendImage(req, res) {
     user: user_id,
     message: getFilePath(req.files.image),
     type: "IMAGE",
-    estatus:"NOLEIDO"
+    estatus:"NOLEIDO",
+    lectores_message:""
   });
 
   //console.log(group_message); 
@@ -410,7 +501,8 @@ function sendFile(req, res) {
     user: user_id,
     message: getFilePath(req.files.file),
     type: "FILE",
-    estatus:"NOLEIDO"
+    estatus:"NOLEIDO",
+    lectores_message:""
   });
 
  // console.log(group_message);  
