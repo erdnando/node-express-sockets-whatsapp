@@ -11,7 +11,7 @@ async function notify_read(req, res) {
    // console.log("Trabajando con el idMsg::", idMsg)
     console.log("Trabajando con el group_id: ",group_id);
     //idUser --> es el q lo leyo
-    const { user_id } = req.user;//el q avisa q alguien lo lleyo
+    //const { user_id } = req.user;//el q avisa q alguien lo lleyo
     console.log("idUser que leyo el mensaje:::");
     console.log(idUser.toString());
 
@@ -51,6 +51,7 @@ async function notify_read(req, res) {
           
           messagesGroup.forEach((msgx) => {
 
+            if( msgx.estatus != "LEIDO"){
                   console.log("looping messagesGroup")
                   msgAux=msgx.message;
                   aux_lectores_message=msgx.lectores_message;
@@ -94,7 +95,10 @@ async function notify_read(req, res) {
                           console.log("msg actualizado, estatus y lectores_messages");
                         }
                       }); 
-                      console.log("==========================iteration==========================")
+                      console.log("==========================iteration==========================");
+            }else{
+              arrResponse.push({idMsg:msgx._id, estatus: msgx.estatus});
+            }
           });//end foreach messages
 
 
