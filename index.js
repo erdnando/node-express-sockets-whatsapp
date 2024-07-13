@@ -27,12 +27,12 @@ mongoose.connect(mongoDbUrl, (error) => {
       });
 
       socket.on("subscribe", (room) => {
-        console.log("=================================");
-        console.log("subscribe channel de: usuario");
-        console.log(room);
-        console.log("=================================");
+       // console.log("=================================");
+       // console.log("subscribe channel de: usuario");
+       // console.log(room);
+       // console.log("=================================");
         socket.join(room);
-        console.log("List of channels:::")
+        //console.log("List of channels:::")
         //console.log(io.sockets.adapter.rooms)
         console.log(socket.rooms);
       });

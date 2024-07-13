@@ -6,30 +6,27 @@ import { io, getFilePath } from "../utils/index.js";
 async function notify_read(req, res) {
 
     console.log("notify_read")
-    const { idUser, idMsg, grupoAbierto } = req.body;
+    const { idUser, group_id } = req.body;
 
-    console.log("Trabajando con el idMsg::", idMsg)
+   // console.log("Trabajando con el idMsg::", idMsg)
+    console.log("Trabajando con el group_id: ",group_id);
     //idUser --> es el q lo leyo
     const { user_id } = req.user;//el q avisa q alguien lo lleyo
-    let group_id ='';
-    if(idMsg != undefined){
+    console.log("idUser que leyo el mensaje:::");
+    console.log(idUser.toString());
 
+   // let group_id ='';
+    /*if(idMsg != "allMessages"){
+       //detectando el grupo, al q pertenene el mensaje
         const messageRef = await GroupMessage.findById({ _id: idMsg });
-        console.log("idUser que leyo el mensaje:::");
-        console.log(idUser.toString());
-
-        if(messageRef == null){
-        console.log("message id no encontrado!!!!!")
-          res.status(400).send(false);
-          return;
-        }
       //====================================================================================
-          //getting group id
-          group_id = messageRef.group.toString();
-          console.log("group_id:",group_id);
+       //getting group id
+        group_id = messageRef.group.toString();
+          
     }else{
       group_id = grupoAbierto;
-    }
+    }*/
+  
    
     //get number of member in this group
     const groupParticipants = await Group.findById({ _id: group_id }).populate("participants");
@@ -40,80 +37,76 @@ async function notify_read(req, res) {
     const messagesGroup= await GroupMessage.find({ group: group_id });
     console.log("obteniendo mensajes del grupo")
     //console.log(messagesGroup)
+
+    //---------------------------------------------------------------------------------------------
   
     let msgAux="";
     let coincidencia=false;
     let aux_lectores_message="";
+    let arrResponse = [];
 
     try{
-
-      console.log("===================================");
-      console.log(grupoAbierto);
-      console.log(group_id);
-      console.log("===================================");
-
-      if(grupoAbierto == group_id){
+      //if(grupoAbierto == group_id){
           //looping them & evaluate reader counters
           
           messagesGroup.forEach((msgx) => {
-            console.log("looping messagesGroup")
-            msgAux=msgx.message;
 
-            if(msgx.lectores_message== undefined || msgx.lectores_message== null){
-              console.log("valida nulls")
-              coincidencia == false;
-            
-              aux_lectores_message= idUser.toString()+',';//indicating, this user read the message
-            }else{
-              aux_lectores_message=msgx.lectores_message;
-                coincidencia = aux_lectores_message.includes(idUser.toString());
-                console.log("coincidencia");
-                console.log(coincidencia);
+                  console.log("looping messagesGroup")
+                  msgAux=msgx.message;
+                  aux_lectores_message=msgx.lectores_message;
 
-                if(coincidencia == false){
+                  coincidencia = aux_lectores_message.includes(idUser.toString());
+                  console.log("coincidencia");
+                  console.log(coincidencia);
 
-                  aux_lectores_message= aux_lectores_message+idUser.toString()+',';
-                  //console.log("anadiendo userid a la lista de leidos:",idUser.toString());
-                  //msgx.lectores_message = aux_lectores_message+idUser.toString()+',';
-                }
-            }
-
-            
-            const numeroVistos = (aux_lectores_message).split(',');
-            console.log("numeroVistos:",numeroVistos.length-1);
-
-            //compare number of mebers vs lecrtores_message split -1
-            if(numeroVistos.length-1 == numParticipantes){
-              msgx.estatus="LEIDO";
-              //algunLeido=true;
-            }
-            else{
-              msgx.estatus="NOLEIDO";
-            }
-            console.log(" msgx.estatus:", msgx.estatus);
-            msgx.lectores_message = aux_lectores_message;
-            console.log("msgx.lectores_messages: ",aux_lectores_message);
-            //-----------------------------------------------------
-              //Updating record
-                 GroupMessage.findByIdAndUpdate({ _id: msgx._id }, msgx, (error) => {
-                  if (error) {
-                    console.log("Crashing kere!!!")
-                    console.log(error)
-                  }else{
-                    console.log("msg actualizado, estatus y lectores_messages");
+                  if(coincidencia == false){
+                    aux_lectores_message= aux_lectores_message+idUser.toString()+',';
+                    //console.log("anadiendo userid a la lista de leidos:",idUser.toString());
                   }
-                }); 
-                console.log("==========================iteration==========================")
+                  
+                  const numeroVistos = (aux_lectores_message).split(',');
+                  console.log("numeroVistos:",numeroVistos.length-1);
+
+                  //compare number of mebers vs lecrtores_message split -1
+                  if( (numeroVistos.length-1) == numParticipantes){
+                    msgx.estatus="LEIDO";
+                  }
+                  else{
+                    msgx.estatus="NOLEIDO";
+                  }
+
+                  arrResponse.push({idMsg:msgx._id, estatus: msgx.estatus});
+
+                  //console.log(" msgx.estatus:", msgx.estatus);
+                  msgx.lectores_message = aux_lectores_message;
+                  console.log("msgx.lectores_messages: ",aux_lectores_message);
+                  //-----------------------------------------------------
+                    //Updating record
+                   // console.log("actualizando este registro::")
+                   // console.log(msgx);
+                   // console.log("----------------------------------")
+
+                      GroupMessage.findByIdAndUpdate({ _id: msgx._id }, msgx, (error) => {
+                        if (error) {
+                          console.log("Crashing kere!!!")
+                          console.log(error)
+                        }else{
+                          console.log("msg actualizado, estatus y lectores_messages");
+                        }
+                      }); 
+                      console.log("==========================iteration==========================")
           });//end foreach messages
-          console.log("Actualizacion de mensajes:");
+
+
 
          //emit to members of a group
-          const data={ message:msgAux+"-"+idUser.toString(), group_id:group_id };
-          console.log("Enviando a socket reloadmsgs:");
-          io.sockets.in(`${group_id}`).emit("reloadmsgs", data);
+          const data={ message:msgAux+"-"+idUser.toString(), group_id:group_id, arrResponse:arrResponse };
+          console.log("Enviando a socket updateSeen:");
+         // io.sockets.in(`${group_id}`).emit("updateSeen", data);
+          io.sockets.in(`${group_id}_seen`).emit("updateSeen", data);
         //===================================================================
           
-    }
+   // }
     
       res.status(201).send(true);
     }catch(err){
@@ -177,12 +170,15 @@ function sendText(req, res) {
             //Envia push notification a los miembros del grupo, menos al que lo origino
             if(userId._id.toString() !== user_id){
               console.log("emitiendo a (members):", userId._id.toString())
-              io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+             
+              io.sockets.in(userId._id.toString()).emit("newMessagex", data);
+             // io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+              io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
             }
            //Envia push notification al que lo origino
             if(userId._id.toString() == user_id){
-              console.log("emitiendo a (owner):", userId._id.toString())
-              io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
+              console.log("emitiendo a (owner):", userId._id.toString());
+              io.sockets.in(userId._id.toString()).emit("newMessagex_me", data);
             }
          });
 
@@ -243,12 +239,13 @@ function sendTextForwardedImage(req, res) {
           //Envia push notification a los miembros del grupo, menos al que lo origino
           if(userId._id.toString() !== user_id){
            // console.log("emitiendo a:", userId._id.toString())
-            io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+           io.sockets.in(userId._id.toString()).emit("newMessagex", data);
+           io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
           }
          //Envia push notification al que lo origino
           if(userId._id.toString() == user_id){
            // console.log("emitiendo a:", userId._id.toString())
-            io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
+            io.sockets.in(userId._id.toString()).emit("newMessagex_me", data);
           }
        });
 
@@ -309,12 +306,13 @@ function sendTextForwardedFile(req, res) {
           //Envia push notification a los miembros del grupo, menos al que lo origino
           if(userId._id.toString() !== user_id){
            // console.log("emitiendo a:", userId._id.toString())
-            io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+           io.sockets.in(userId._id.toString()).emit("newMessagex", data);
+           io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
           }
          //Envia push notification al que lo origino
           if(userId._id.toString() == user_id){
            // console.log("emitiendo a:", userId._id.toString())
-            io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
+            io.sockets.in(userId._id.toString()).emit("newMessagex_me", data);
           }
        });
 
@@ -416,12 +414,12 @@ async function deleteMessage(req, res) {
          //Envia push notification a los miembros del grupo, menos al que lo origino
          if(userId._id.toString() !== user_id){
            console.log("emitiendo a:", userId._id.toString())
-           io.sockets.in(userId._id.toString()).emit("reloadmsgs",  {"group_id":group_id,"idMessage":idMessage, "message":message});
+           io.sockets.in(userId._id.toString()).emit("refreshDelete",  {"group_id":group_id,"idMessage":idMessage, "message":message});
          }
         //Envia push notification al que lo origino
          if(userId._id.toString() == user_id){
            console.log("emitiendo a:", userId._id.toString())
-           io.sockets.in(userId._id.toString()).emit("reloadmsgs",  {"group_id":group_id,"idMessage":idMessage, "message":message});
+           io.sockets.in(userId._id.toString()).emit("refreshDelete",  {"group_id":group_id,"idMessage":idMessage, "message":message});
          }
       });
       //===============================================================================
@@ -474,12 +472,13 @@ function sendImage(req, res) {
           //Envia push notification a los miembros del grupo, menos al que lo origino
           if(userId._id.toString() !== user_id){
             //console.log("emitiendo a:", userId._id.toString())
-            io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+            io.sockets.in(userId._id.toString()).emit("newMessagex", data);
+            io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
           }
          //Envia push notification al que lo origino
           if(userId._id.toString() == user_id){
            // console.log("emitiendo a:", userId._id.toString())
-            io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
+            io.sockets.in(userId._id.toString()).emit("newMessagex_me", data);
           }
        });
 
@@ -534,12 +533,13 @@ function sendFile(req, res) {
              //Envia push notification a los miembros del grupo, menos al que lo origino
              if(userId._id.toString() !== user_id){
             //  console.log("emitiendo a:", userId._id.toString())
-              io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
+            io.sockets.in(userId._id.toString()).emit("newMessagex", data);
+            io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
             }
            //Envia push notification al que lo origino
             if(userId._id.toString() == user_id){
              // console.log("emitiendo a:", userId._id.toString())
-              io.sockets.in(userId._id.toString()).emit("pushing_notification_me", data);
+              io.sockets.in(userId._id.toString()).emit("newMessagex_me", data);
             }
 
           });

@@ -203,6 +203,7 @@ async function exitGroup(req, res) {
 //===========================================================================================================================
 async function addParticipants(req, res) {
 
+  console.log("addParticipants");
   const { id } = req.params;
   const { users_id } = req.body;
 
@@ -226,15 +227,14 @@ async function addParticipants(req, res) {
 
 
   //new
+  console.log("notificando a los q agregaron");
   arrayObjectIds.forEach((user_id) => {
-   // console.log("user_id invitado")
-   // console.log(user_id.toString())
-   // console.log("datos del grupo")
-   // console.log(newData)
-   // console.log("emiting to:", user_id.toString())
-   //io.sockets.in(user_id.toString()).emit("message_invite", newData);
-   io.sockets.in(`${user_id.toString()}`).emit("message_invite", newData);
-   //io.sockets.in(`${user_id.toString()}_invite`).emit("message_invite", newData);
+
+   console.log("Enviando al socket-->, user_id")
+   console.log(`${user_id.toString()}`)
+   //io.sockets.in(`${user_id.toString()}`).emit("newInvite", newData);
+   io.sockets.in(`${user_id.toString()}_invite`).emit("newInvite", newData);
+  
   });
 
   res.status(200).send({ msg: "Participantes añadidos correctamente" });
@@ -258,7 +258,7 @@ async function banParticipant(req, res) {
 
   await Group.findByIdAndUpdate(group_id, newData);
 
-  //console.log("Baneando a", user_id.toString())
+  console.log("Baneando a", user_id.toString())
   //io.sockets.in(user_id.toString()).emit("group_banned", newData);
  // io.sockets.in(`${user_id.toString()}_banned`).emit("group_banned", newData);
   io.sockets.in(`${user_id.toString()}`).emit("group_banned", newData);
