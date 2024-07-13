@@ -137,7 +137,7 @@ function sendText(req, res) {
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:forwarded,
     estatus:"NOLEIDO",
-    lectores_message:""
+    lectores_message:user_id.toString()+","
   });
 
   //console.log("---------------------------------")
@@ -212,7 +212,7 @@ function sendTextForwardedImage(req, res) {
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:true,
     estatus:"NOLEIDO",
-    lectores_message:""
+    lectores_message:user_id.toString()+","
   });
 
   group_message.save(async (error) => {
@@ -278,7 +278,7 @@ function sendTextForwardedFile(req, res) {
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:true,
     estatus:"NOLEIDO",
-    lectores_message:""
+    lectores_message:user_id.toString()+","
   });
 
   group_message.save(async (error) => {
@@ -505,7 +505,7 @@ function sendFile(req, res) {
     message: getFilePath(req.files.file),
     type: "FILE",
     estatus:"NOLEIDO",
-    lectores_message:""
+    lectores_message:user_id.toString()+","
   });
 
  // console.log(group_message);  
