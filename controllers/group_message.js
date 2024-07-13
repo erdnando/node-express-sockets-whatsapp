@@ -448,7 +448,7 @@ function sendImage(req, res) {
     message: getFilePath(req.files.image),
     type: "IMAGE",
     estatus:"NOLEIDO",
-    lectores_message:""
+    lectores_message:user_id.toString()+","
   });
 
   //console.log(group_message); 

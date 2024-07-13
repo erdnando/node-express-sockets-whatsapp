@@ -34,7 +34,7 @@ mongoose.connect(mongoDbUrl, (error) => {
         socket.join(room);
         //console.log("List of channels:::")
         //console.log(io.sockets.adapter.rooms)
-        console.log(socket.rooms);
+        //console.log(socket.rooms);
       });
 
       socket.on("unsubscribe", (room) => {
