@@ -22,10 +22,7 @@ const GroupMessageSchema = mongoose.Schema(
     forwarded:Boolean,
     estatus:String,
     lectores_message:String,
-    /*replied_message:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "GroupMessage",
-    }*/
+    edited_message:Boolean
   },
   {
     timestamps: true,

@@ -15,19 +15,6 @@ async function notify_read(req, res) {
     console.log("idUser que leyo el mensaje:::");
     console.log(idUser.toString());
 
-   // let group_id ='';
-    /*if(idMsg != "allMessages"){
-       //detectando el grupo, al q pertenene el mensaje
-        const messageRef = await GroupMessage.findById({ _id: idMsg });
-      //====================================================================================
-       //getting group id
-        group_id = messageRef.group.toString();
-          
-    }else{
-      group_id = grupoAbierto;
-    }*/
-  
-   
     //get number of member in this group
     const groupParticipants = await Group.findById({ _id: group_id }).populate("participants");
     const numParticipantes = groupParticipants.participants.length; 
@@ -82,10 +69,6 @@ async function notify_read(req, res) {
                   msgx.lectores_message = aux_lectores_message;
                   console.log("msgx.lectores_messages: ",aux_lectores_message);
                   //-----------------------------------------------------
-                    //Updating record
-                   // console.log("actualizando este registro::")
-                   // console.log(msgx);
-                   // console.log("----------------------------------")
 
                       GroupMessage.findByIdAndUpdate({ _id: msgx._id }, msgx, (error) => {
                         if (error) {
@@ -101,22 +84,16 @@ async function notify_read(req, res) {
             }
           });//end foreach messages
 
-
-
          //emit to members of a group
           const data={ message:msgAux+"-"+idUser.toString(), group_id:group_id, arrResponse:arrResponse };
           console.log("Enviando a socket updateSeen:");
-         // io.sockets.in(`${group_id}`).emit("updateSeen", data);
           io.sockets.in(`${group_id}_seen`).emit("updateSeen", data);
         //===================================================================
-          
-   // }
     
       res.status(201).send(true);
     }catch(err){
         res.status(400).send({ msg: "Error al actualizar mensajes en estado LEIDO"+ err });
     }
-
 }
 
 function sendText(req, res) {
@@ -137,13 +114,9 @@ function sendText(req, res) {
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:forwarded,
     estatus:"NOLEIDO",
-    lectores_message:user_id.toString()+","
+    lectores_message:user_id.toString()+",",
+    edited_message:false
   });
-
-  //console.log("---------------------------------")
- // console.log(replied_message?.user?.firstname)
- // console.log(replied_message?.user?.email)
- // console.log("---------------------------------")
 
       group_message.save(async (error) => {
 
@@ -152,23 +125,10 @@ function sendText(req, res) {
         } else {
           let  data = await group_message.populate(["user"]);
 
-        //  console.log("==================GroupMessage===================");
-        //  console.log(data);
-        //  console.log("Enviando al grupo::::::")
-        //  console.log(group_id)
-        
-
          //get all members of the group
          const response = await Group.findById({ _id: group_id }).populate("participants");
 
          response.participants.forEach((userId) => {
-
-           // console.log("userId del grupo")
-          //  console.log(userId._id.toString())
-           // console.log(user_id)
-        
-           // console.log(userId._id.toString() == user_id)
-           // console.log(userId._id.toString() === user_id)
 
            console.log(io.sockets.adapter.rooms)
             //Envia push notification a los miembros del grupo, menos al que lo origino
@@ -212,7 +172,8 @@ function sendTextForwardedImage(req, res) {
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:true,
     estatus:"NOLEIDO",
-    lectores_message:user_id.toString()+","
+    lectores_message:user_id.toString()+",",
+    edited_message:false
   });
 
   group_message.save(async (error) => {
@@ -278,7 +239,8 @@ function sendTextForwardedFile(req, res) {
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:true,
     estatus:"NOLEIDO",
-    lectores_message:user_id.toString()+","
+    lectores_message:user_id.toString()+",",
+    edited_message:false
   });
 
   group_message.save(async (error) => {
@@ -379,6 +341,7 @@ async function sendTextEditado(req, res) {
  // console.log(messageRef);
   messageRef.message=message;
   messageRef.tipo_cifrado=tipo_cifrado;
+  messageRef.edited_message=true;
  // console.log("==============================");
  // console.log(messageRef);
 
@@ -387,6 +350,11 @@ async function sendTextEditado(req, res) {
       res.status(400).send({ msg: "Error al actualizar el mensaje" });
     } else {
      // io.sockets.in(group_id).emit("reloadmsgs", true);
+
+      //emit to members of a group
+      const data={ message:message+"-"+user_id.toString(), group_id:group_id, arrResponse:[] };
+      console.log("Enviando a socket updateSeen:");
+      io.sockets.in(`${group_id}_seen`).emit("updateSeen", data);
       res.status(201).send(messageRef);
     }
   });
@@ -433,8 +401,6 @@ async function deleteMessage(req, res) {
 
 }
 
-
-
 //=================================================================================================================
 function sendImage(req, res) {
 
@@ -448,7 +414,8 @@ function sendImage(req, res) {
     message: getFilePath(req.files.image),
     type: "IMAGE",
     estatus:"NOLEIDO",
-    lectores_message:user_id.toString()+","
+    lectores_message:user_id.toString()+",",
+    edited_message:false
   });
 
   //console.log(group_message); 
@@ -505,7 +472,8 @@ function sendFile(req, res) {
     message: getFilePath(req.files.file),
     type: "FILE",
     estatus:"NOLEIDO",
-    lectores_message:user_id.toString()+","
+    lectores_message:user_id.toString()+",",
+    edited_message:false
   });
 
  // console.log(group_message);  
