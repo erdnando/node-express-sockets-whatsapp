@@ -1,5 +1,5 @@
 import { GroupMessage, Group } from "../models/index.js";
-import { io, getFilePath } from "../utils/index.js";
+import { io, getFilePath,sendPushNotification } from "../utils/index.js";
 
 //=================================================================================================================
 
@@ -133,16 +133,19 @@ function sendText(req, res) {
            console.log(io.sockets.adapter.rooms)
             //Envia push notification a los miembros del grupo, menos al que lo origino
             if(userId._id.toString() !== user_id){
-              console.log("emitiendo a (members):", userId._id.toString())
+              console.log("emitiendo a (members):", userId._id.toString());
              
               io.sockets.in(userId._id.toString()).emit("newMessagex", data);
-             // io.sockets.in(userId._id.toString()).emit("pushing_notification", data);
-              io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+              //io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+             sendPushNotification(userId.exponentPushToken,"Secure Chat: Nuevo mensaje!!!");
             }
            //Envia push notification al que lo origino
             if(userId._id.toString() == user_id){
               console.log("emitiendo a (owner):", userId._id.toString());
               io.sockets.in(userId._id.toString()).emit("newMessagex_me", data);
+
+              console.log("sendPushNotification....");
+             
             }
          });
 

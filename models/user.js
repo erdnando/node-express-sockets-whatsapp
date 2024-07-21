@@ -7,6 +7,7 @@ const UserSchema = mongoose.Schema({
   password: String,
   avatar: String,
   nip: String,
+  exponentPushToken: String,
 });
 
 export const User = mongoose.model("User", UserSchema);

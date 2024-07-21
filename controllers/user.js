@@ -118,8 +118,8 @@ async function updateUser(req, res) {
   const { user_id } = req.user;
   //get complete body with file
   const userData = req.body;
-  //console.log("Actualizando user data");
-  //console.log(req.body);
+  console.log("Actualizando user data");
+  console.log(req.body);
 
   if (req.files.avatar) {
     const imagePath = getFilePath(req.files.avatar);
