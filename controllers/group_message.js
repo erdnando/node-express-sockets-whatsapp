@@ -208,7 +208,8 @@ function sendTextForwardedImage(req, res) {
           if(userId._id.toString() !== user_id){
            // console.log("emitiendo a:", userId._id.toString())
            io.sockets.in(userId._id.toString()).emit("newMessagex", data);
-           io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+           //io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+           sendPushNotification(userId.exponentPushToken,"Secure Chat: Mensaje reenviado!!!");
           }
          //Envia push notification al que lo origino
           if(userId._id.toString() == user_id){
@@ -276,7 +277,8 @@ function sendTextForwardedFile(req, res) {
           if(userId._id.toString() !== user_id){
            // console.log("emitiendo a:", userId._id.toString())
            io.sockets.in(userId._id.toString()).emit("newMessagex", data);
-           io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+           //io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+           sendPushNotification(userId.exponentPushToken,"Secure Chat: Mensaje reenviado!!!");
           }
          //Envia push notification al que lo origino
           if(userId._id.toString() == user_id){
@@ -447,7 +449,8 @@ function sendImage(req, res) {
           if(userId._id.toString() !== user_id){
             //console.log("emitiendo a:", userId._id.toString())
             io.sockets.in(userId._id.toString()).emit("newMessagex", data);
-            io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+            //io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+            sendPushNotification(userId.exponentPushToken,"Secure Chat: Nuevo mensaje!!!");
           }
          //Envia push notification al que lo origino
           if(userId._id.toString() == user_id){
@@ -509,7 +512,8 @@ function sendFile(req, res) {
              if(userId._id.toString() !== user_id){
             //  console.log("emitiendo a:", userId._id.toString())
             io.sockets.in(userId._id.toString()).emit("newMessagex", data);
-            io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+            //io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
+            sendPushNotification(userId.exponentPushToken,"Secure Chat: Nuevo mensaje!!!");
             }
            //Envia push notification al que lo origino
             if(userId._id.toString() == user_id){
