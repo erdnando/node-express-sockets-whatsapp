@@ -85,9 +85,12 @@ function getAll(req, res) {
 
         const response = await GroupMessage.findOne({ group: group._id }).sort({ createdAt: -1, });
 
+        const allMessages = await GroupMessage.find({ group: group._id, estatus: 'NOLEIDO' });
+
         arrayGroups.push({
           ...group._doc,
           last_message_date: response?.createdAt || null,
+          messages_unread: allMessages
         });
       }
 
