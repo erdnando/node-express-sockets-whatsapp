@@ -103,13 +103,15 @@ function sendText(req, res) {
   
   const { user_id } = req.user;//user who send the message
 
+  console.log("replied_message");
+  console.log(replied_message);
   const group_message = new GroupMessage({
     group: group_id,
     user: user_id,
     message,
     type: "TEXT",
     tipo_cifrado:tipo_cifrado,
-    email_replied:replied_message?.user?.firstname == "" ? replied_message?.user?.email: replied_message?.user?.firstname,
+    email_replied:(replied_message?.user?.firstname == "" || replied_message?.user?.firstname == undefined) ? replied_message?.user?.email: replied_message?.user?.firstname,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
     forwarded:forwarded,
@@ -142,6 +144,8 @@ function sendText(req, res) {
            //Envia push notification al que lo origino
             if(userId._id.toString() == user_id){
               console.log("emitiendo a (owner):", userId._id.toString());
+              console.log("data");
+              console.log(data);
               io.sockets.in(userId._id.toString()).emit("newMessagex_me", data);
 
               console.log("sendPushNotification....");
