@@ -38,7 +38,7 @@ mongoose.connect(mongoDbUrl, (error) => {
       });
 
       socket.on("unsubscribe", (room) => {
-        //console.log("unsubscribe room");
+        console.log("unsubscribe room");
         //console.log(room);
 
         socket.leave(room);

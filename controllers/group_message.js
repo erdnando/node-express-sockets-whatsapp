@@ -144,8 +144,8 @@ function sendText(req, res) {
            //Envia push notification al que lo origino
             if(userId._id.toString() == user_id){
               console.log("emitiendo a (owner):", userId._id.toString());
-              console.log("data");
-              console.log(data);
+             // console.log("data");
+             // console.log(data);
               io.sockets.in(userId._id.toString()).emit("newMessagex_me", data);
 
               console.log("sendPushNotification....");
@@ -173,7 +173,8 @@ function sendTextForwardedImage(req, res) {
     type: "IMAGE",
     tipo_cifrado:tipo_cifrado,
     //email_replied:replied_message?.user?.email,
-    email_replied:replied_message?.user?.firstname == "" ? replied_message?.user?.email: replied_message?.user?.firstname,
+    //email_replied:replied_message?.user?.firstname == "" ? replied_message?.user?.email: replied_message?.user?.firstname,
+    email_replied:(replied_message?.user?.firstname == "" || replied_message?.user?.firstname == undefined) ? replied_message?.user?.email: replied_message?.user?.firstname,
     message_replied:replied_message?.message,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
@@ -241,7 +242,8 @@ function sendTextForwardedFile(req, res) {
     type: "FILE",
     tipo_cifrado:tipo_cifrado,
     //email_replied:replied_message?.user?.email,
-    email_replied:replied_message?.user?.firstname == "" ? replied_message?.user?.email: replied_message?.user?.firstname,
+    //email_replied:replied_message?.user?.firstname == "" ? replied_message?.user?.email: replied_message?.user?.firstname,
+    email_replied:(replied_message?.user?.firstname == "" || replied_message?.user?.firstname == undefined) ? replied_message?.user?.email: replied_message?.user?.firstname,
     message_replied:replied_message?.message,
     message_replied:replied_message?.message,
     tipo_cifrado_replied:replied_message?.tipo_cifrado,
