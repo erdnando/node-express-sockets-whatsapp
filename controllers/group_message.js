@@ -132,24 +132,25 @@ function sendText(req, res) {
 
          response.participants.forEach((userId) => {
 
-           console.log(io.sockets.adapter.rooms)
+           //console.log(io.sockets.adapter.rooms)
             //Envia push notification a los miembros del grupo, menos al que lo origino
             if(userId._id.toString() !== user_id){
               console.log("emitiendo a (members):", userId._id.toString());
              
+              
               io.sockets.in(userId._id.toString()).emit("newMessagex", data);
               //io.sockets.in(`${userId._id.toString()}_notify`).emit("pushing_notification", {"message": userId._id.toString()});
-             sendPushNotification(userId.exponentPushToken,"Secure Chat: Nuevo mensaje!!!");
+              sendPushNotification(userId.exponentPushToken,"Secure Chat: Nuevo mensaje!!!");
             }
            //Envia push notification al que lo origino
             if(userId._id.toString() == user_id){
               console.log("emitiendo a (owner):", userId._id.toString());
              // console.log("data");
              // console.log(data);
+             //sendPushNotification(userId.exponentPushToken,"Secure Chat: Nuevo mensaje!!!");
               io.sockets.in(userId._id.toString()).emit("newMessagex_me", data);
-
-              console.log("sendPushNotification....");
              
+              console.log("sendPushNotification....");
             }
          });
 
